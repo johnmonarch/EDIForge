@@ -1,6 +1,6 @@
 package schema
 
-import "github.com/openedi/ediforge/internal/model"
+import "github.com/johnmonarch/ediforge/internal/model"
 
 type Schema struct {
 	ID           string                 `json:"id"`

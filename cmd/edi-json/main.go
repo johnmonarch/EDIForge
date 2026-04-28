@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openedi/ediforge/internal/cli"
+	"github.com/johnmonarch/ediforge/internal/cli"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/schema"
+	"github.com/johnmonarch/ediforge/internal/schema"
 )
 
 func NewSchemaRegistry(cfg Config) *schema.Registry {

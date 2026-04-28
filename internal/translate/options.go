@@ -3,7 +3,7 @@ package translate
 import (
 	"io"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 type Input struct {

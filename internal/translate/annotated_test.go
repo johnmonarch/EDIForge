@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 func TestTranslateAnnotatedWithSchemaAddsMetadata(t *testing.T) {

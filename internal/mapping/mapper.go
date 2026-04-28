@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/schema"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/schema"
 )
 
 func Map(doc *model.Document, s *schema.Schema) (map[string]any, []model.EDIWarning, []model.EDIError) {

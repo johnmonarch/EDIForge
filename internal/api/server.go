@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/app"
-	"github.com/openedi/ediforge/internal/config"
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/app"
+	"github.com/johnmonarch/ediforge/internal/config"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 type Server struct {
@@ -71,6 +71,8 @@ func (s *Server) handleVersion(w http.ResponseWriter, r *http.Request) {
 		"name":    app.Name,
 		"command": app.Command,
 		"version": app.Version,
+		"commit":  app.Commit,
+		"date":    app.Date,
 	})
 }
 

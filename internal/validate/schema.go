@@ -3,8 +3,8 @@ package validate
 import (
 	"fmt"
 
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/schema"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/schema"
 )
 
 func Schema(doc *model.Document, s *schema.Schema) ([]model.EDIWarning, []model.EDIError) {

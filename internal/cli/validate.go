@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 func runValidate(ctx context.Context, args []string) error {

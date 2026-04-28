@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 func Parse(ctx context.Context, input string, opts Options) (*model.Document, error) {

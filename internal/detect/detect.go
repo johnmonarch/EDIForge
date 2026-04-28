@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 type Result struct {

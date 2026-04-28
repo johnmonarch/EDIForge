@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 func runDetect(ctx context.Context, args []string) error {

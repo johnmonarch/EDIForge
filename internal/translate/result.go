@@ -1,8 +1,8 @@
 package translate
 
 import (
-	"github.com/openedi/ediforge/internal/detect"
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/detect"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 type TranslateResult struct {

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/openedi/ediforge/internal/config"
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/config"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 func TestHandlers(t *testing.T) {

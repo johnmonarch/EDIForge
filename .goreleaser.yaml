@@ -1,0 +1,57 @@
+version: 2
+
+project_name: ediforge
+
+builds:
+  - id: edi-json
+    main: ./cmd/edi-json
+    binary: edi-json
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X github.com/johnmonarch/ediforge/internal/app.Version={{ .Version }} -X github.com/johnmonarch/ediforge/internal/app.Commit={{ .Commit }} -X github.com/johnmonarch/ediforge/internal/app.Date={{ .Date }}
+
+archives:
+  - id: edi-json
+    ids:
+      - edi-json
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - LICENSE
+      - NOTICE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+
+release:
+  github:
+    owner: johnmonarch
+    name: EDIForge
+  prerelease: auto
+  make_latest: true

@@ -7,9 +7,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/openedi/ediforge/internal/api"
-	"github.com/openedi/ediforge/internal/config"
-	"github.com/openedi/ediforge/internal/web"
+	"github.com/johnmonarch/ediforge/internal/api"
+	"github.com/johnmonarch/ediforge/internal/config"
+	"github.com/johnmonarch/ediforge/internal/web"
 )
 
 func runServe(ctx context.Context, args []string) error {

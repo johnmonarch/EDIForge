@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/openedi/ediforge/internal/schema"
+	"github.com/johnmonarch/ediforge/internal/schema"
 )
 
 func runSchemas(ctx context.Context, args []string) error {

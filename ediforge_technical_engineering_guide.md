@@ -1536,7 +1536,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/openedi/ediforge/pkg/translator"
+    "github.com/johnmonarch/ediforge/pkg/translator"
 )
 
 func main() {
@@ -1577,7 +1577,7 @@ Rust repository structure:
 ediforge/
   Cargo.toml
   crates/
-    openedi-core/
+    ediforge-core/
       src/
         detect/
         parse/
@@ -1585,11 +1585,11 @@ ediforge/
         validate/
         mapping/
         jsonout/
-    openedi-cli/
+    ediforge-cli/
       src/main.rs
-    openedi-api/
+    ediforge-api/
       src/
-    openedi-web/
+    ediforge-web/
       dist/
   schemas/
   testdata/
@@ -1601,9 +1601,9 @@ Rust parser crate should be independent from CLI and API crates.
 Recommended Rust crate split:
 
 ```text
-openedi-core: parser, validation, mapping, JSON output
-openedi-cli: command-line app
-openedi-api: local server
+ediforge-core: parser, validation, mapping, JSON output
+ediforge-cli: command-line app
+ediforge-api: local server
 ediforge: final binary that combines CLI and server
 ```
 
@@ -1740,7 +1740,7 @@ Deliverables:
 Acceptance:
 
 ```bash
-docker run --rm -p 8765:8765 openedi/ediforge serve
+docker run --rm -p 8765:8765 ghcr.io/johnmonarch/ediforge serve
 ```
 
 ## 28. Agent Build Instructions
@@ -1907,7 +1907,7 @@ import (
     "encoding/json"
     "net/http"
 
-    "github.com/openedi/ediforge/internal/translate"
+    "github.com/johnmonarch/ediforge/internal/translate"
 )
 
 type Server struct {

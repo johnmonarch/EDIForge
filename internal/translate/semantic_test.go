@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 func TestTranslateSemanticMapsLoops(t *testing.T) {

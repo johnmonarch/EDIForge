@@ -6,14 +6,14 @@ import (
 	"io"
 	"time"
 
-	"github.com/openedi/ediforge/internal/detect"
-	"github.com/openedi/ediforge/internal/jsonout"
-	"github.com/openedi/ediforge/internal/mapping"
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/parse/edifact"
-	"github.com/openedi/ediforge/internal/parse/x12"
-	"github.com/openedi/ediforge/internal/schema"
-	schemavalidate "github.com/openedi/ediforge/internal/validate"
+	"github.com/johnmonarch/ediforge/internal/detect"
+	"github.com/johnmonarch/ediforge/internal/jsonout"
+	"github.com/johnmonarch/ediforge/internal/mapping"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/parse/edifact"
+	"github.com/johnmonarch/ediforge/internal/parse/x12"
+	"github.com/johnmonarch/ediforge/internal/schema"
+	schemavalidate "github.com/johnmonarch/ediforge/internal/validate"
 )
 
 type Service struct {

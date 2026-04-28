@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 func runExplain(ctx context.Context, args []string) error {

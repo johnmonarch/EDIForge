@@ -4,8 +4,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 type Options struct {

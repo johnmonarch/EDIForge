@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/openedi/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/model"
 )
 
 func TestParseX12Envelope(t *testing.T) {

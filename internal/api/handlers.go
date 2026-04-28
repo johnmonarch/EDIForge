@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/openedi/ediforge/internal/model"
-	"github.com/openedi/ediforge/internal/schema"
-	"github.com/openedi/ediforge/internal/translate"
+	"github.com/johnmonarch/ediforge/internal/model"
+	"github.com/johnmonarch/ediforge/internal/schema"
+	"github.com/johnmonarch/ediforge/internal/translate"
 )
 
 type detectRequest struct {
