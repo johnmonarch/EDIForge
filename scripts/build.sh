@@ -24,7 +24,7 @@ fi
 if [ -f go.mod ] && [ -d cmd/edi-json ]; then
   echo "==> Building edi-json"
   mkdir -p "$BIN_DIR"
-  VERSION=${VERSION:-0.1.0-dev}
+  VERSION=${VERSION:-dev}
   COMMIT=${COMMIT:-$(git rev-parse --short HEAD 2>/dev/null || printf unknown)}
   DATE=${DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}
   go build -trimpath -ldflags="-s -w -X github.com/johnmonarch/ediforge/internal/app.Version=$VERSION -X github.com/johnmonarch/ediforge/internal/app.Commit=$COMMIT -X github.com/johnmonarch/ediforge/internal/app.Date=$DATE" -o "$BIN_DIR/edi-json" ./cmd/edi-json
