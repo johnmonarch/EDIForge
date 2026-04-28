@@ -1,0 +1,178 @@
+{
+  "id": "x12-997-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 997 Basic Functional Acknowledgment",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 997 functional acknowledgment into semantic JSON.",
+  "standard": "x12",
+  "transaction": "997",
+  "version": "004010",
+  "documentType": "functional_acknowledgment",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "AK1",
+      "purpose": "functional_group_response_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "AK101": "acknowledgedGroup.functionalIdentifierCode",
+        "AK102": "acknowledgedGroup.groupControlNumber"
+      }
+    },
+    {
+      "tag": "AK2",
+      "purpose": "transaction_set_response_header",
+      "required": false,
+      "max": 100000,
+      "loop": "acknowledgedTransactions",
+      "maps": {
+        "AK201": "acknowledgedTransactions[].transactionSetIdentifierCode",
+        "AK202": "acknowledgedTransactions[].transactionSetControlNumber"
+      }
+    },
+    {
+      "tag": "AK5",
+      "purpose": "transaction_set_response_trailer",
+      "required": false,
+      "max": 1,
+      "loop": "acknowledgedTransactions",
+      "maps": {
+        "AK501": "acknowledgedTransactions[].acknowledgmentCode"
+      }
+    },
+    {
+      "tag": "AK9",
+      "purpose": "functional_group_response_trailer",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "AK901": "groupAcknowledgmentCode",
+        "AK902": "summary.includedTransactionSetCount",
+        "AK903": "summary.receivedTransactionSetCount",
+        "AK904": "summary.acceptedTransactionSetCount"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "functional_acknowledgment"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "997"
+    },
+    "acknowledgedGroup.functionalIdentifierCode": {
+      "path": "AK1[0].AK101",
+      "transforms": [
+        "upper",
+        "required"
+      ]
+    },
+    "acknowledgedGroup.groupControlNumber": {
+      "path": "AK1[0].AK102",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "groupAcknowledgmentCode": {
+      "path": "AK9[0].AK901",
+      "transforms": [
+        "upper",
+        "required"
+      ]
+    },
+    "summary.includedTransactionSetCount": {
+      "path": "AK9[0].AK902",
+      "transforms": [
+        "integer"
+      ]
+    },
+    "summary.receivedTransactionSetCount": {
+      "path": "AK9[0].AK903",
+      "transforms": [
+        "integer"
+      ]
+    },
+    "summary.acceptedTransactionSetCount": {
+      "path": "AK9[0].AK904",
+      "transforms": [
+        "integer"
+      ]
+    },
+    "acknowledgedTransactions[].transactionSetIdentifierCode": {
+      "path": "AK2[].AK201",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "acknowledgedTransactions[].transactionSetControlNumber": {
+      "path": "AK2[].AK202",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "acknowledgedTransactions[].acknowledgmentCode": {
+      "path": "AK2[] > AK5[0].AK501",
+      "transforms": [
+        "upper"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "acknowledgedGroup",
+      "groupAcknowledgmentCode"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "acknowledgedGroup": {
+        "type": "object",
+        "required": true
+      },
+      "groupAcknowledgmentCode": {
+        "type": "string",
+        "required": true
+      },
+      "acknowledgedTransactions": {
+        "type": "array"
+      },
+      "summary": {
+        "type": "object"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "AK1",
+        "AK9"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*ACKSENDER      *ZZ*ACKRECEIVER    *260427*1210*U*00401*000000101*0*T*>~GS*FA*ACKSENDER*ACKRECEIVER*20260427*1210*101*X*004010~ST*997*0001~AK1*PO*1~AK2*850*0001~AK5*A~AK9*A*1*1*1~SE*6*0001~GE*1*101~IEA*1*000000101~"
+}

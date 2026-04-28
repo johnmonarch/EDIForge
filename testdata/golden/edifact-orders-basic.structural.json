@@ -1,0 +1,185 @@
+{
+  "interchanges": [
+    {
+      "controlNumber": "1",
+      "messages": [
+        {
+          "controllingOrg": "UN",
+          "reference": "1",
+          "release": "96A",
+          "segmentCount": 5,
+          "segments": [
+            {
+              "elements": [
+                {
+                  "index": 1,
+                  "value": "1"
+                },
+                {
+                  "components": [
+                    "ORDERS",
+                    "D",
+                    "96A",
+                    "UN"
+                  ],
+                  "index": 2,
+                  "value": "ORDERS:D:96A:UN"
+                }
+              ],
+              "position": 3,
+              "tag": "UNH"
+            },
+            {
+              "elements": [
+                {
+                  "index": 1,
+                  "value": "220"
+                },
+                {
+                  "index": 2,
+                  "value": "PO12345"
+                },
+                {
+                  "index": 3,
+                  "value": "9"
+                }
+              ],
+              "position": 4,
+              "tag": "BGM"
+            },
+            {
+              "elements": [
+                {
+                  "components": [
+                    "137",
+                    "20260427",
+                    "102"
+                  ],
+                  "index": 1,
+                  "value": "137:20260427:102"
+                }
+              ],
+              "position": 5,
+              "tag": "DTM"
+            },
+            {
+              "elements": [
+                {
+                  "index": 1,
+                  "value": "BY"
+                },
+                {
+                  "components": [
+                    "BUYER01",
+                    "",
+                    "92"
+                  ],
+                  "index": 2,
+                  "value": "BUYER01::92"
+                },
+                {
+                  "index": 3
+                },
+                {
+                  "index": 4,
+                  "value": "Example Buyer"
+                }
+              ],
+              "position": 6,
+              "tag": "NAD"
+            },
+            {
+              "elements": [
+                {
+                  "index": 1,
+                  "value": "5"
+                },
+                {
+                  "index": 2,
+                  "value": "1"
+                }
+              ],
+              "position": 7,
+              "tag": "UNT"
+            }
+          ],
+          "type": "ORDERS",
+          "version": "D"
+        }
+      ],
+      "rawEnvelope": [
+        {
+          "elements": [],
+          "position": 1,
+          "tag": "UNA"
+        },
+        {
+          "elements": [
+            {
+              "components": [
+                "UNOC",
+                "3"
+              ],
+              "index": 1,
+              "value": "UNOC:3"
+            },
+            {
+              "index": 2,
+              "value": "SENDER"
+            },
+            {
+              "index": 3,
+              "value": "RECEIVER"
+            },
+            {
+              "components": [
+                "260427",
+                "1200"
+              ],
+              "index": 4,
+              "value": "260427:1200"
+            },
+            {
+              "index": 5,
+              "value": "1"
+            }
+          ],
+          "position": 2,
+          "tag": "UNB"
+        },
+        {
+          "elements": [
+            {
+              "index": 1,
+              "value": "1"
+            },
+            {
+              "index": 2,
+              "value": "1"
+            }
+          ],
+          "position": 8,
+          "tag": "UNZ"
+        }
+      ],
+      "receiverId": "RECEIVER",
+      "senderId": "SENDER",
+      "standard": "edifact"
+    }
+  ],
+  "metadata": {
+    "delimiters": {
+      "component": ":",
+      "decimalMark": ".",
+      "element": "+",
+      "release": "?",
+      "segment": "'"
+    },
+    "messages": 1,
+    "mode": "structural",
+    "segments": 8,
+    "translatedBy": "EDIForge"
+  },
+  "standard": "edifact",
+  "version": "3"
+}

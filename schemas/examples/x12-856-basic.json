@@ -1,0 +1,325 @@
+{
+  "id": "x12-856-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 856 Basic Ship Notice",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 856 ship notice/manifest into semantic JSON.",
+  "standard": "x12",
+  "transaction": "856",
+  "version": "004010",
+  "documentType": "advance_ship_notice",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "BSN",
+      "purpose": "ship_notice_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BSN01": "purposeCode",
+        "BSN02": "shipmentId",
+        "BSN03": "shipNoticeDate",
+        "BSN04": "shipNoticeTime"
+      }
+    },
+    {
+      "tag": "DTM",
+      "purpose": "dates",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "DTM01": "dates[].qualifier",
+        "DTM02": "dates[].date"
+      }
+    },
+    {
+      "tag": "HL",
+      "purpose": "hierarchical_level",
+      "required": true,
+      "max": 100000,
+      "maps": {
+        "HL01": "hierarchy[].id",
+        "HL02": "hierarchy[].parentId",
+        "HL03": "hierarchy[].levelCode"
+      }
+    },
+    {
+      "tag": "TD1",
+      "purpose": "carrier_details_quantity",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "TD101": "packagingCode",
+        "TD102": "ladingQuantity"
+      }
+    },
+    {
+      "tag": "TD5",
+      "purpose": "carrier_routing",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "TD502": "carrier.idQualifier",
+        "TD503": "carrier.id",
+        "TD505": "carrier.routing"
+      }
+    },
+    {
+      "tag": "REF",
+      "purpose": "references",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "REF01": "references[].qualifier",
+        "REF02": "references[].value"
+      }
+    },
+    {
+      "tag": "N1",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N101": "parties[].role",
+        "N102": "parties[].name",
+        "N103": "parties[].idQualifier",
+        "N104": "parties[].id"
+      }
+    },
+    {
+      "tag": "N3",
+      "purpose": "party_address_lines",
+      "required": false,
+      "max": 2,
+      "loop": "parties",
+      "maps": {
+        "N301": "parties[].address.line1"
+      }
+    },
+    {
+      "tag": "N4",
+      "purpose": "party_location",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N401": "parties[].address.city",
+        "N402": "parties[].address.state",
+        "N403": "parties[].address.postalCode",
+        "N404": "parties[].address.country"
+      }
+    },
+    {
+      "tag": "LIN",
+      "purpose": "item_identification",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "LIN01": "lineItems[].lineNumber",
+        "LIN02": "lineItems[].productIdQualifier",
+        "LIN03": "lineItems[].productId"
+      }
+    },
+    {
+      "tag": "SN1",
+      "purpose": "item_shipment_detail",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "SN102": "lineItems[].quantityShipped",
+        "SN103": "lineItems[].unitOfMeasure"
+      }
+    },
+    {
+      "tag": "CTT",
+      "purpose": "transaction_summary",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "CTT01": "summary.lineItemCount"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "advance_ship_notice"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "856"
+    },
+    "shipmentId": {
+      "path": "BSN[0].BSN02",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "shipNoticeDate": {
+      "path": "BSN[0].BSN03",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "shipDate": {
+      "path": "DTM[0].DTM02",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "carrier.id": {
+      "path": "TD5[0].TD503",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "carrier.routing": {
+      "path": "TD5[0].TD505",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "billOfLadingNumber": {
+      "path": "REF[0].REF02",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipFrom.name": {
+      "path": "N1[0].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.name": {
+      "path": "N1[1].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].role": {
+      "path": "N1[].N101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].name": {
+      "path": "N1[].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].id": {
+      "path": "N1[].N104",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.line1": {
+      "path": "N1[] > N3[0].N301",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.city": {
+      "path": "N1[] > N4[0].N401",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "LIN[].LIN01",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].productId": {
+      "path": "LIN[].LIN03",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].quantityShipped": {
+      "path": "LIN[] > SN1[0].SN102",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "LIN[] > SN1[0].SN103",
+      "transforms": [
+        "upper"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "shipmentId"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "shipmentId": {
+        "type": "string",
+        "required": true
+      },
+      "shipNoticeDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "shipDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "carrier": {
+        "type": "object"
+      },
+      "shipFrom": {
+        "type": "object"
+      },
+      "shipTo": {
+        "type": "object"
+      },
+      "parties": {
+        "type": "array"
+      },
+      "lineItems": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "BSN",
+        "HL"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*SENDER         *ZZ*RECEIVER       *260427*1210*U*00401*000000856*0*T*>~GS*SH*SENDER*RECEIVER*20260427*1210*856*X*004010~ST*856*0001~BSN*00*ASN-10001*20260427*1210~DTM*011*20260427~HL*1**S~TD1*CTN25*1~TD5**2*EXCA**Example Carrier~REF*BM*BOL-10001~N1*SF*Example Shipper*92*SHIPPER01~N3*10 Origin Road~N4*Greenville*SC*29601*US~N1*ST*Example Receiver*92*RECEIVER01~N3*20 Destination Avenue~N4*Columbia*SC*29201*US~HL*2*1*I~LIN*1*VN*SKU-100~SN1**10*EA~CTT*1~SE*18*0001~GE*1*856~IEA*1*000000856~"
+}

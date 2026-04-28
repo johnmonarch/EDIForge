@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use EDIForge in research, publications, or public datasets, please cite the project."
+title: "EDIForge: Local-First EDI-to-JSON Translator"
+type: software
+authors:
+  - name: "EDIForge contributors"
+repository-code: "https://github.com/openedi/ediforge"
+abstract: "A local-first, open-source EDI-to-JSON translator for X12 and UN/EDIFACT through CLI, REST API, and local web UI workflows."
+license: "Apache-2.0"
+keywords:
+  - EDI
+  - X12
+  - EDIFACT
+  - logistics
+  - JSON
+  - local-first
+

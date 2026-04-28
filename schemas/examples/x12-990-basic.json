@@ -1,0 +1,144 @@
+{
+  "id": "x12-990-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 990 Basic Response to a Load Tender",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 990 response to a load tender into semantic JSON.",
+  "standard": "x12",
+  "transaction": "990",
+  "version": "004010",
+  "documentType": "load_tender_response",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "B1",
+      "purpose": "load_tender_response_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "B101": "carrier.scac",
+        "B102": "shipmentIdentificationNumber",
+        "B103": "responseDate",
+        "B104": "reservationActionCode"
+      }
+    },
+    {
+      "tag": "N9",
+      "purpose": "reference_identification",
+      "required": false,
+      "max": 300,
+      "maps": {
+        "N901": "references[].qualifier",
+        "N902": "references[].value"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "load_tender_response"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "990"
+    },
+    "carrier.scac": {
+      "path": "B1[0].B101",
+      "transforms": [
+        "upper",
+        "required"
+      ]
+    },
+    "shipmentIdentificationNumber": {
+      "path": "B1[0].B102",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "responseDate": {
+      "path": "B1[0].B103",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "reservationActionCode": {
+      "path": "B1[0].B104",
+      "transforms": [
+        "upper",
+        "required"
+      ]
+    },
+    "references[].qualifier": {
+      "path": "N9[].N901",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "references[].value": {
+      "path": "N9[].N902",
+      "transforms": [
+        "trim"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "carrier",
+      "shipmentIdentificationNumber",
+      "reservationActionCode"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "carrier": {
+        "type": "object",
+        "required": true
+      },
+      "shipmentIdentificationNumber": {
+        "type": "string",
+        "required": true
+      },
+      "responseDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "reservationActionCode": {
+        "type": "string",
+        "required": true
+      },
+      "references": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "B1"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*CARRIER        *ZZ*SHIPPER        *260427*1230*U*00401*000000103*0*T*>~GS*GF*CARRIER*SHIPPER*20260427*1230*103*X*004010~ST*990*0001~B1*EXMP*LOAD-10001*20260427*A~N9*BM*BOL-10001~SE*4*0001~GE*1*103~IEA*1*000000103~"
+}

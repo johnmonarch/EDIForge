@@ -1,0 +1,251 @@
+{
+  "id": "edifact-ordrsp-basic",
+  "schemaVersion": "0.1.0",
+  "name": "EDIFACT ORDRSP Basic Purchase Order Response",
+  "description": "Public-safe synthetic starter schema for mapping a basic UN/EDIFACT ORDRSP message into semantic JSON.",
+  "standard": "edifact",
+  "message": "ORDRSP",
+  "release": "D:96A",
+  "documentType": "purchase_order_response",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official UN/EDIFACT directory extract and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "UNH",
+      "purpose": "message_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNH01": "messageReference",
+        "UNH02.1": "messageType",
+        "UNH02.2": "messageVersion",
+        "UNH02.3": "messageRelease",
+        "UNH02.4": "controllingAgency"
+      }
+    },
+    {
+      "tag": "BGM",
+      "purpose": "document_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BGM01.1": "documentCode",
+        "BGM02": "orderResponseNumber",
+        "BGM03": "messageFunction"
+      }
+    },
+    {
+      "tag": "DTM",
+      "purpose": "dates",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "DTM01.1": "dates[].qualifier",
+        "DTM01.2": "dates[].value",
+        "DTM01.3": "dates[].format"
+      }
+    },
+    {
+      "tag": "RFF",
+      "purpose": "references",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "RFF01.1": "references[].qualifier",
+        "RFF01.2": "references[].value"
+      }
+    },
+    {
+      "tag": "NAD",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "NAD01": "parties[].role",
+        "NAD02.1": "parties[].id",
+        "NAD04.1": "parties[].name"
+      }
+    },
+    {
+      "tag": "LIN",
+      "purpose": "line_item",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "LIN01": "lineItems[].lineNumber",
+        "LIN03.1": "lineItems[].itemId",
+        "LIN03.2": "lineItems[].itemIdQualifier"
+      }
+    },
+    {
+      "tag": "QTY",
+      "purpose": "line_quantity",
+      "required": false,
+      "max": 10,
+      "loop": "lineItems",
+      "maps": {
+        "QTY01.1": "lineItems[].quantityQualifier",
+        "QTY01.2": "lineItems[].acceptedQuantity",
+        "QTY01.3": "lineItems[].unitOfMeasure"
+      }
+    },
+    {
+      "tag": "UNS",
+      "purpose": "section_control",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "UNS01": "summary.section"
+      }
+    },
+    {
+      "tag": "UNT",
+      "purpose": "message_trailer",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNT01": "summary.segmentCount",
+        "UNT02": "messageReference"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "purchase_order_response"
+    },
+    "standard": {
+      "literal": "edifact"
+    },
+    "sourceType": {
+      "literal": "ORDRSP"
+    },
+    "messageReference": {
+      "path": "UNH[0].UNH01",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "orderResponseNumber": {
+      "path": "BGM[0].BGM02",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "responseDate": {
+      "path": "DTM[DTM01.1='137'].DTM01.2",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "purchaseOrderNumber": {
+      "path": "RFF[RFF01.1='ON'].RFF01.2",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "buyer.name": {
+      "path": "NAD[NAD01='BY'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "supplier.name": {
+      "path": "NAD[NAD01='SU'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "LIN[].LIN01",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].itemId": {
+      "path": "LIN[].LIN03.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].acceptedQuantity": {
+      "path": "LIN[] > QTY[QTY01.1='113'].QTY01.2",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "LIN[] > QTY[QTY01.1='113'].QTY01.3",
+      "transforms": [
+        "upper"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "messageReference",
+      "orderResponseNumber"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "messageReference": {
+        "type": "string",
+        "required": true
+      },
+      "orderResponseNumber": {
+        "type": "string",
+        "required": true
+      },
+      "responseDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "purchaseOrderNumber": {
+        "type": "string"
+      },
+      "buyer": {
+        "type": "object"
+      },
+      "supplier": {
+        "type": "object"
+      },
+      "lineItems": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "UNH",
+        "BGM",
+        "UNT"
+      ],
+      "maxRepeats": true,
+      "controlReferences": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1'UNH+1+ORDRSP:D:96A:UN'BGM+231+POR-10001+29'DTM+137:20260427:102'RFF+ON:PO-10001'NAD+BY+BUYER01::92++Example Buyer'NAD+SU+SUPPLIER01::92++Example Supplier'LIN+1++SKU-100:VN'QTY+113:10:EA'LIN+2++SKU-200:VN'QTY+113:5:EA'UNS+S'UNT+12+1'UNZ+1+1'\n"
+}

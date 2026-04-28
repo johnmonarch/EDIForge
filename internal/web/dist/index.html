@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EDIForge</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>EDIForge</h1>
+          <p>Local EDI to JSON workbench</p>
+        </div>
+        <div class="server-state" id="serverState">Idle</div>
+      </header>
+
+      <main class="workspace">
+        <section class="pane input-pane" aria-labelledby="inputTitle">
+          <div class="pane-header">
+            <div>
+              <h2 id="inputTitle">EDI Input</h2>
+              <span id="inputStats">0 chars</span>
+            </div>
+            <label class="file-button">
+              <input id="fileInput" type="file" accept=".edi,.txt,.x12,.edifact">
+              Load file
+            </label>
+          </div>
+
+          <textarea id="ediInput" spellcheck="false" placeholder="Paste EDI here"></textarea>
+
+          <div class="control-grid">
+            <label>
+              Standard
+              <select id="standardSelect">
+                <option value="auto">Auto</option>
+                <option value="x12">X12</option>
+                <option value="edifact">EDIFACT</option>
+              </select>
+            </label>
+            <label>
+              Mode
+              <select id="modeSelect">
+                <option value="structural">Structural</option>
+                <option value="annotated">Annotated</option>
+                <option value="semantic">Semantic</option>
+              </select>
+            </label>
+            <label>
+              Schema ID
+              <input id="schemaIdInput" type="text" value="x12-850-basic">
+            </label>
+            <label>
+              API Base
+              <input id="apiBaseInput" type="text">
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button id="detectButton" type="button">Detect</button>
+            <button id="translateButton" type="button" class="primary">Translate</button>
+            <button id="validateButton" type="button">Validate</button>
+          </div>
+
+          <div class="button-row samples">
+            <button type="button" data-sample="x12">X12 sample</button>
+            <button type="button" data-sample="edifact">EDIFACT sample</button>
+            <button id="clearButton" type="button">Clear</button>
+          </div>
+        </section>
+
+        <section class="pane output-pane" aria-labelledby="outputTitle">
+          <div class="pane-header">
+            <div>
+              <h2 id="outputTitle">JSON Output</h2>
+              <span id="responseMeta">No response</span>
+            </div>
+            <div class="button-row compact">
+              <button id="copyButton" type="button">Copy</button>
+              <button id="downloadButton" type="button">Download</button>
+            </div>
+          </div>
+
+          <pre id="jsonOutput" tabindex="0">{}</pre>
+        </section>
+      </main>
+
+      <section class="workbench" aria-label="Document workbench">
+        <div class="summary-grid">
+          <article class="summary-card">
+            <h2>Envelope</h2>
+            <dl id="envelopeSummary"></dl>
+          </article>
+          <article class="summary-card">
+            <h2>Transactions</h2>
+            <dl id="transactionSummary"></dl>
+          </article>
+          <article class="summary-card">
+            <h2>Segments</h2>
+            <dl id="segmentSummary"></dl>
+          </article>
+        </div>
+
+        <div class="segment-workbench">
+          <div class="segment-panel">
+            <div class="segment-toolbar">
+              <div>
+                <h2>Segment List</h2>
+                <span id="segmentCount">No segments</span>
+              </div>
+              <label>
+                Filter tag
+                <input id="segmentFilter" type="search" placeholder="BEG">
+              </label>
+            </div>
+            <ol id="segmentList" class="segment-list"></ol>
+          </div>
+          <div class="segment-detail">
+            <h2>Segment Detail</h2>
+            <pre id="segmentDetail">Select a segment to inspect details.</pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="result-strip" aria-label="Result details">
+        <div class="result-column">
+          <h2>Errors</h2>
+          <ul id="errorsList"></ul>
+        </div>
+        <div class="result-column">
+          <h2>Warnings</h2>
+          <ul id="warningsList"></ul>
+        </div>
+        <div class="result-column">
+          <h2>Metadata</h2>
+          <pre id="metadataOutput">{}</pre>
+        </div>
+      </section>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,294 @@
+{
+  "id": "edifact-invoic-basic",
+  "schemaVersion": "0.1.0",
+  "name": "EDIFACT INVOIC Basic Invoice",
+  "description": "Public-safe synthetic starter schema for mapping a basic UN/EDIFACT INVOIC message into semantic JSON.",
+  "standard": "edifact",
+  "message": "INVOIC",
+  "release": "D:96A",
+  "documentType": "invoice",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official UN/EDIFACT directory extract and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "UNH",
+      "purpose": "message_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNH01": "messageReference",
+        "UNH02.1": "messageType",
+        "UNH02.2": "messageVersion",
+        "UNH02.3": "messageRelease",
+        "UNH02.4": "controllingAgency"
+      }
+    },
+    {
+      "tag": "BGM",
+      "purpose": "document_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BGM01.1": "documentCode",
+        "BGM02": "invoiceNumber",
+        "BGM03": "messageFunction"
+      }
+    },
+    {
+      "tag": "DTM",
+      "purpose": "dates",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "DTM01.1": "dates[].qualifier",
+        "DTM01.2": "dates[].value",
+        "DTM01.3": "dates[].format"
+      }
+    },
+    {
+      "tag": "RFF",
+      "purpose": "references",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "RFF01.1": "references[].qualifier",
+        "RFF01.2": "references[].value"
+      }
+    },
+    {
+      "tag": "NAD",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "NAD01": "parties[].role",
+        "NAD02.1": "parties[].id",
+        "NAD04.1": "parties[].name"
+      }
+    },
+    {
+      "tag": "CUX",
+      "purpose": "currency",
+      "required": false,
+      "max": 5,
+      "maps": {
+        "CUX01.2": "currency"
+      }
+    },
+    {
+      "tag": "LIN",
+      "purpose": "line_item",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "LIN01": "lineItems[].lineNumber",
+        "LIN03.1": "lineItems[].itemId",
+        "LIN03.2": "lineItems[].itemIdQualifier"
+      }
+    },
+    {
+      "tag": "QTY",
+      "purpose": "line_quantity",
+      "required": false,
+      "max": 10,
+      "loop": "lineItems",
+      "maps": {
+        "QTY01.1": "lineItems[].quantityQualifier",
+        "QTY01.2": "lineItems[].invoicedQuantity",
+        "QTY01.3": "lineItems[].unitOfMeasure"
+      }
+    },
+    {
+      "tag": "MOA",
+      "purpose": "monetary_amount",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "MOA01.1": "amounts[].qualifier",
+        "MOA01.2": "amounts[].value"
+      }
+    },
+    {
+      "tag": "UNS",
+      "purpose": "section_control",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "UNS01": "summary.section"
+      }
+    },
+    {
+      "tag": "UNT",
+      "purpose": "message_trailer",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNT01": "summary.segmentCount",
+        "UNT02": "messageReference"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "invoice"
+    },
+    "standard": {
+      "literal": "edifact"
+    },
+    "sourceType": {
+      "literal": "INVOIC"
+    },
+    "messageReference": {
+      "path": "UNH[0].UNH01",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "invoiceNumber": {
+      "path": "BGM[0].BGM02",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "invoiceDate": {
+      "path": "DTM[DTM01.1='137'].DTM01.2",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "purchaseOrderNumber": {
+      "path": "RFF[RFF01.1='ON'].RFF01.2",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "buyer.name": {
+      "path": "NAD[NAD01='BY'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "supplier.name": {
+      "path": "NAD[NAD01='SU'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "currency": {
+      "path": "CUX[0].CUX01.2",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "LIN[].LIN01",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].itemId": {
+      "path": "LIN[].LIN03.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].invoicedQuantity": {
+      "path": "LIN[] > QTY[QTY01.1='47'].QTY01.2",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "LIN[] > QTY[QTY01.1='47'].QTY01.3",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "lineItems[].lineAmount": {
+      "path": "LIN[] > MOA[MOA01.1='203'].MOA01.2",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "invoiceTotal": {
+      "path": "MOA[MOA01.1='77'].MOA01.2",
+      "transforms": [
+        "decimal"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "messageReference",
+      "invoiceNumber"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "messageReference": {
+        "type": "string",
+        "required": true
+      },
+      "invoiceNumber": {
+        "type": "string",
+        "required": true
+      },
+      "invoiceDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "purchaseOrderNumber": {
+        "type": "string"
+      },
+      "buyer": {
+        "type": "object"
+      },
+      "supplier": {
+        "type": "object"
+      },
+      "currency": {
+        "type": "string"
+      },
+      "lineItems": {
+        "type": "array"
+      },
+      "invoiceTotal": {
+        "type": "number"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "UNH",
+        "BGM",
+        "UNT"
+      ],
+      "maxRepeats": true,
+      "controlReferences": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1'UNH+1+INVOIC:D:96A:UN'BGM+380+INV-10001+9'DTM+137:20260427:102'RFF+ON:PO-10001'NAD+BY+BUYER01::92++Example Buyer'NAD+SU+SUPPLIER01::92++Example Supplier'CUX+2:USD:4'LIN+1++SKU-100:VN'QTY+47:10:EA'MOA+203:150.00'LIN+2++SKU-200:VN'QTY+47:5:EA'MOA+203:75.00'UNS+S'MOA+77:225.00'UNT+16+1'UNZ+1+1'\n"
+}

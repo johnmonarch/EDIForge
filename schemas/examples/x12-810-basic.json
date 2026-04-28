@@ -1,0 +1,273 @@
+{
+  "id": "x12-810-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 810 Basic Invoice",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 810 invoice into semantic JSON.",
+  "standard": "x12",
+  "transaction": "810",
+  "version": "004010",
+  "documentType": "invoice",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "BIG",
+      "purpose": "invoice_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BIG01": "invoiceDate",
+        "BIG02": "invoiceNumber",
+        "BIG03": "purchaseOrderDate",
+        "BIG04": "purchaseOrderNumber"
+      }
+    },
+    {
+      "tag": "N1",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N101": "parties[].role",
+        "N102": "parties[].name",
+        "N103": "parties[].idQualifier",
+        "N104": "parties[].id"
+      }
+    },
+    {
+      "tag": "N3",
+      "purpose": "party_address_lines",
+      "required": false,
+      "max": 2,
+      "loop": "parties",
+      "maps": {
+        "N301": "parties[].address.line1"
+      }
+    },
+    {
+      "tag": "N4",
+      "purpose": "party_location",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N401": "parties[].address.city",
+        "N402": "parties[].address.state",
+        "N403": "parties[].address.postalCode",
+        "N404": "parties[].address.country"
+      }
+    },
+    {
+      "tag": "IT1",
+      "purpose": "invoice_line_item",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "IT101": "lineItems[].lineNumber",
+        "IT102": "lineItems[].quantity",
+        "IT103": "lineItems[].unitOfMeasure",
+        "IT104": "lineItems[].unitPrice",
+        "IT106": "lineItems[].productIdQualifier",
+        "IT107": "lineItems[].productId"
+      }
+    },
+    {
+      "tag": "TDS",
+      "purpose": "total_monetary_value",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "TDS01": "summary.totalAmountCents"
+      }
+    },
+    {
+      "tag": "CTT",
+      "purpose": "transaction_summary",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "CTT01": "summary.lineItemCount"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "invoice"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "810"
+    },
+    "invoiceNumber": {
+      "path": "BIG[0].BIG02",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "invoiceDate": {
+      "path": "BIG[0].BIG01",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "purchaseOrderNumber": {
+      "path": "BIG[0].BIG04",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "seller.name": {
+      "path": "N1[0].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "billTo.name": {
+      "path": "N1[1].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].role": {
+      "path": "N1[].N101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].name": {
+      "path": "N1[].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].id": {
+      "path": "N1[].N104",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.line1": {
+      "path": "N1[] > N3[0].N301",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.city": {
+      "path": "N1[] > N4[0].N401",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "IT1[].IT101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].quantity": {
+      "path": "IT1[].IT102",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "IT1[].IT103",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "lineItems[].unitPrice": {
+      "path": "IT1[].IT104",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].productId": {
+      "path": "IT1[].IT107",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "summary.totalAmountCents": {
+      "path": "TDS[0].TDS01",
+      "transforms": [
+        "integer"
+      ]
+    },
+    "summary.lineItemCount": {
+      "path": "CTT[0].CTT01",
+      "transforms": [
+        "integer"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "invoiceNumber"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "invoiceNumber": {
+        "type": "string",
+        "required": true
+      },
+      "invoiceDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "purchaseOrderNumber": {
+        "type": "string"
+      },
+      "seller": {
+        "type": "object"
+      },
+      "billTo": {
+        "type": "object"
+      },
+      "parties": {
+        "type": "array"
+      },
+      "lineItems": {
+        "type": "array"
+      },
+      "summary": {
+        "type": "object"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "BIG",
+        "TDS"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*SENDER         *ZZ*RECEIVER       *260427*1230*U*00401*000000810*0*T*>~GS*IN*SENDER*RECEIVER*20260427*1230*810*X*004010~ST*810*0001~BIG*20260427*INV-10001*20260427*PO-10001~N1*SE*Example Seller*92*SELLER01~N3*200 Invoice Way~N4*Greenville*SC*29601*US~N1*BT*Example Bill To*92*BILLTO01~N3*300 Accounts Lane~N4*Columbia*SC*29201*US~IT1*1*10*EA*3.50**VN*SKU-100~TDS*3500~CTT*1~SE*12*0001~GE*1*810~IEA*1*000000810~"
+}

@@ -1,0 +1,261 @@
+{
+  "id": "edifact-orders-basic",
+  "schemaVersion": "0.1.0",
+  "name": "EDIFACT ORDERS Basic Purchase Order",
+  "description": "Public-safe synthetic starter schema for mapping a basic UN/EDIFACT ORDERS message into semantic JSON.",
+  "standard": "edifact",
+  "message": "ORDERS",
+  "release": "D:96A",
+  "documentType": "purchase_order",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official UN/EDIFACT directory extract and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "UNH",
+      "purpose": "message_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNH01": "messageReference",
+        "UNH02.1": "messageType",
+        "UNH02.2": "messageVersion",
+        "UNH02.3": "messageRelease",
+        "UNH02.4": "controllingAgency"
+      }
+    },
+    {
+      "tag": "BGM",
+      "purpose": "document_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BGM01.1": "documentCode",
+        "BGM02": "purchaseOrderNumber",
+        "BGM03": "messageFunction"
+      }
+    },
+    {
+      "tag": "DTM",
+      "purpose": "dates",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "DTM01.1": "dates[].qualifier",
+        "DTM01.2": "dates[].value",
+        "DTM01.3": "dates[].format"
+      }
+    },
+    {
+      "tag": "NAD",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "NAD01": "parties[].role",
+        "NAD02.1": "parties[].id",
+        "NAD04.1": "parties[].name",
+        "NAD06": "parties[].address.line1",
+        "NAD07": "parties[].address.city",
+        "NAD08": "parties[].address.region",
+        "NAD09": "parties[].address.postalCode",
+        "NAD10": "parties[].address.country"
+      }
+    },
+    {
+      "tag": "LIN",
+      "purpose": "line_item",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "LIN01": "lineItems[].lineNumber",
+        "LIN03.1": "lineItems[].itemId",
+        "LIN03.2": "lineItems[].itemIdQualifier"
+      }
+    },
+    {
+      "tag": "QTY",
+      "purpose": "line_quantity",
+      "required": false,
+      "max": 10,
+      "loop": "lineItems",
+      "maps": {
+        "QTY01.1": "lineItems[].quantities[].qualifier",
+        "QTY01.2": "lineItems[].quantities[].value",
+        "QTY01.3": "lineItems[].quantities[].unitOfMeasure"
+      }
+    },
+    {
+      "tag": "UNS",
+      "purpose": "section_control",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "UNS01": "summary.section"
+      }
+    },
+    {
+      "tag": "UNT",
+      "purpose": "message_trailer",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "UNT01": "summary.segmentCount",
+        "UNT02": "messageReference"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "purchase_order"
+    },
+    "standard": {
+      "literal": "edifact"
+    },
+    "sourceType": {
+      "literal": "ORDERS"
+    },
+    "messageReference": {
+      "path": "UNH[0].UNH01",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "purchaseOrderNumber": {
+      "path": "BGM[0].BGM02",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "orderDate": {
+      "path": "DTM[DTM01.1='137'].DTM01.2",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "buyer.name": {
+      "path": "NAD[NAD01='BY'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "buyer.id": {
+      "path": "NAD[NAD01='BY'].NAD02.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.name": {
+      "path": "NAD[NAD01='DP'].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].role": {
+      "path": "NAD[].NAD01",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].id": {
+      "path": "NAD[].NAD02.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].name": {
+      "path": "NAD[].NAD04.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "LIN[].LIN01",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].itemId": {
+      "path": "LIN[].LIN03.1",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].orderedQuantity": {
+      "path": "LIN[] > QTY[QTY01.1='21'].QTY01.2",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "LIN[] > QTY[QTY01.1='21'].QTY01.3",
+      "transforms": [
+        "upper"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "messageReference",
+      "purchaseOrderNumber"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "messageReference": {
+        "type": "string",
+        "required": true
+      },
+      "purchaseOrderNumber": {
+        "type": "string",
+        "required": true
+      },
+      "orderDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "buyer": {
+        "type": "object"
+      },
+      "shipTo": {
+        "type": "object"
+      },
+      "lineItems": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "UNH",
+        "BGM",
+        "UNT"
+      ],
+      "maxRepeats": true,
+      "controlReferences": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1'UNH+1+ORDERS:D:96A:UN'BGM+220+PO-10001+9'DTM+137:20260427:102'NAD+BY+BUYER01::92++Example Buyer'NAD+DP+SHIPTO01::92++Example Ship To'LIN+1++SKU-100:VN'QTY+21:10:EA'UNS+S'UNT+9+1'UNZ+1+1'"
+}
