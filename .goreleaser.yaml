@@ -54,4 +54,4 @@ release:
     owner: johnmonarch
     name: EDIForge
   prerelease: auto
-  make_latest: true
+  make_latest: false
