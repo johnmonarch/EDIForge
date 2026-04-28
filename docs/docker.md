@@ -25,7 +25,7 @@ For a published release image:
 docker run --rm \
   -p 8765:8765 \
   -v "$PWD:/work" \
-  ghcr.io/johnmonarch/ediforge:0.1.0-alpha.1 serve --host 0.0.0.0 --port 8765
+  ghcr.io/johnmonarch/ediforge:0.1.0-alpha.3 serve --host 0.0.0.0 --port 8765
 ```
 
 When binding outside localhost, the application should require an API token unless the user explicitly chooses an unsafe override.
