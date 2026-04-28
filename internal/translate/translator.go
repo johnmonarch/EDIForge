@@ -82,7 +82,11 @@ func (s *Service) Translate(ctx context.Context, input Input, opts TranslateOpti
 	result.DocumentType = firstDocumentType(doc)
 
 	if len(doc.Errors) > 0 && !opts.AllowPartial {
-		result.Result = jsonout.Structural(doc)
+		if opts.Mode == model.ModeAnnotated {
+			result.Result = s.annotatedResult(doc, result, opts)
+		} else {
+			result.Result = jsonout.Structural(doc)
+		}
 		return result, nil
 	}
 
@@ -90,7 +94,7 @@ func (s *Service) Translate(ctx context.Context, input Input, opts TranslateOpti
 	case model.ModeStructural:
 		result.Result = jsonout.Structural(doc)
 	case model.ModeAnnotated:
-		result.Result = jsonout.Annotated(doc)
+		result.Result = s.annotatedResult(doc, result, opts)
 	case model.ModeSemantic:
 		loaded, err := s.Schemas.Resolve(opts.SchemaID, opts.SchemaPath)
 		if err != nil {
@@ -121,6 +125,27 @@ func (s *Service) Translate(ctx context.Context, input Input, opts TranslateOpti
 	}
 
 	return result, nil
+}
+
+func (s *Service) annotatedResult(doc *model.Document, result *TranslateResult, opts TranslateOptions) any {
+	var loaded *schema.Schema
+	if opts.SchemaID != "" || opts.SchemaPath != "" {
+		var err error
+		loaded, err = s.Schemas.Resolve(opts.SchemaID, opts.SchemaPath)
+		if err != nil {
+			result.OK = false
+			result.Errors = append(result.Errors, model.EDIError{
+				Severity: "error",
+				Code:     "SCHEMA_LOAD_FAILED",
+				Message:  err.Error(),
+			})
+			result.Metadata = doc.Metadata
+			return jsonout.Annotated(doc, nil)
+		}
+		doc.Metadata.SchemaID = loaded.ID
+		result.Metadata = doc.Metadata
+	}
+	return jsonout.Annotated(doc, loaded)
 }
 
 func (s *Service) Validate(ctx context.Context, input Input, opts ValidateOptions) (*ValidateResult, error) {

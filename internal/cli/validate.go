@@ -8,6 +8,10 @@ import (
 )
 
 func runValidate(ctx context.Context, args []string) error {
+	cfg, err := loadConfig()
+	if err != nil {
+		return err
+	}
 	var standard string
 	var schemaPath string
 	var schemaID string
@@ -36,7 +40,7 @@ func runValidate(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	result, err := translate.NewService().Validate(ctx, input, translate.ValidateOptions{
+	result, err := newServiceWithConfig(cfg).Validate(ctx, input, translate.ValidateOptions{
 		Standard:   standardFlag(standard),
 		SchemaPath: schemaPath,
 		SchemaID:   schemaID,

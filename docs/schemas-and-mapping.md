@@ -6,6 +6,10 @@ EDIForge supports three output modes:
 - `annotated`: add labels from legal metadata sources or user schemas.
 - `semantic`: map source EDI into business-friendly JSON using a schema.
 
+Annotated mode works without a schema by adding element IDs such as `BEG01` or
+`N101`. When a schema is supplied, segment rules enrich output with purpose,
+loop, required/max metadata, source-to-target maps, and element target names.
+
 ## Schema Resolution
 
 Recommended resolution order:
@@ -14,6 +18,15 @@ Recommended resolution order:
 2. Project `./schemas`.
 3. User `~/.edi-json/schemas`.
 4. Built-in public-safe examples.
+
+Configured schema roots can be supplied in `edi-json.yml`:
+
+```yaml
+schemas:
+  paths:
+    - ./schemas
+    - ~/edi-schemas
+```
 
 ## Public-Safe Examples
 

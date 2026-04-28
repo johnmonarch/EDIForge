@@ -1,6 +1,6 @@
 # Quickstart
 
-EDIForge is a local-first EDI-to-JSON translator for X12 and UN/EDIFACT. The Go application is under active implementation, so this guide documents the intended MVP workflow and the scaffold available today.
+EDIForge is a local-first EDI-to-JSON translator for X12 and UN/EDIFACT. The Go application provides a CLI, local REST API, embedded web UI, structural output, annotated output, semantic mapping, and syntax/schema validation.
 
 ## Build
 
@@ -22,6 +22,18 @@ The script validates bundled JSON examples and runs Go/frontend checks when the 
 
 ```bash
 edi-json translate input.edi --standard auto --mode structural --pretty
+```
+
+Translate a folder of EDI files:
+
+```bash
+edi-json translate ./incoming --pretty
+```
+
+Use annotated mode with a schema:
+
+```bash
+edi-json translate input.edi --mode annotated --schema-id x12-850-basic --pretty
 ```
 
 ## Validate

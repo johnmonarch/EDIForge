@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/openedi/ediforge/internal/config"
 	"github.com/openedi/ediforge/internal/model"
 	"github.com/openedi/ediforge/internal/translate"
 )
@@ -111,6 +112,20 @@ func writeOutput(path string, value any, pretty bool) error {
 		return ExitError{Code: 5, Err: err}
 	}
 	return nil
+}
+
+func loadConfig() (config.Config, error) {
+	cfg, err := config.Load()
+	if err != nil {
+		return config.Config{}, ExitError{Code: 2, Err: err}
+	}
+	return cfg, nil
+}
+
+func newServiceWithConfig(cfg config.Config) *translate.Service {
+	service := translate.NewService()
+	service.Schemas = config.NewSchemaRegistry(cfg)
+	return service
 }
 
 func errSummary(errors []model.EDIError) error {

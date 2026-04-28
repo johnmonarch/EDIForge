@@ -40,6 +40,18 @@ Translate a file to structural JSON:
 edi-json translate input.edi --standard auto --mode structural --pretty
 ```
 
+Translate a folder of EDI files:
+
+```bash
+edi-json translate ./incoming --pretty
+```
+
+Inspect parsed EDI with schema-derived annotations:
+
+```bash
+edi-json translate input.edi --mode annotated --schema-id x12-850-basic --pretty
+```
+
 Write JSON to a file:
 
 ```bash
@@ -139,6 +151,18 @@ The static UI in `internal/web/dist` supports:
 - Client-side copy and download of the API response JSON.
 
 The future React/Vite source scaffold lives in `web/`. The Go server must not require `npm install` to serve the embedded UI.
+
+## Configuration
+
+EDIForge loads optional user config from `~/.edi-json/config.yml` and project config from `./edi-json.yml`. Project config can set translation defaults and schema search paths while preserving the built-in public-safe examples as a fallback.
+
+```yaml
+translation:
+  defaultMode: annotated
+schemas:
+  paths:
+    - ./schemas
+```
 
 ## Schema Examples
 

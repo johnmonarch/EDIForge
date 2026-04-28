@@ -6,6 +6,7 @@ The CLI executable is expected to be named `edi-json`.
 
 ```bash
 edi-json translate input.edi
+edi-json translate ./incoming-folder --pretty
 edi-json translate input.edi --standard x12 --pretty
 edi-json translate input.edi --output output.json
 edi-json translate input.edi --mode structural
@@ -46,6 +47,29 @@ edi-json explain input.edi --segment BEG
 --no-store
 ```
 
+When `translate` receives a directory path, it recursively processes files ending in
+`.edi`, `.x12`, `.edifact`, or `.txt` and emits a deterministic batch JSON response.
+The command exits non-zero if any file fails, while still writing per-file results.
+
+## Configuration
+
+The CLI loads configuration from `~/.edi-json/config.yml` and then `./edi-json.yml`
+when those files exist. Project config overrides user config for scalar settings.
+Schema paths from project config are searched before user schema paths, followed by
+the built-in public-safe examples.
+
+```yaml
+translation:
+  defaultMode: annotated
+  includeRawSegments: false
+schemas:
+  paths:
+    - ./schemas
+server:
+  host: 127.0.0.1
+  port: 8765
+```
+
 ## Validate Flags
 
 ```text
@@ -81,4 +105,3 @@ edi-json explain input.edi --segment BEG
 5 internal error
 6 security or unsafe config error
 ```
-

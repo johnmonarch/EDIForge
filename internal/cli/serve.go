@@ -9,14 +9,17 @@ import (
 
 	"github.com/openedi/ediforge/internal/api"
 	"github.com/openedi/ediforge/internal/config"
-	"github.com/openedi/ediforge/internal/translate"
 	"github.com/openedi/ediforge/internal/web"
 )
 
 func runServe(ctx context.Context, args []string) error {
-	cfg := config.Default().Server
+	loaded, err := loadConfig()
+	if err != nil {
+		return err
+	}
+	cfg := loaded.Server
 	var unsafeNoToken bool
-	_, _, err := parseFlagSet("serve", args, map[string]bool{"require-token": true, "unsafe-no-token": true, "no-web": true, "open": true}, func(fs *flag.FlagSet) {
+	_, _, err = parseFlagSet("serve", args, map[string]bool{"require-token": true, "unsafe-no-token": true, "no-web": true, "open": true}, func(fs *flag.FlagSet) {
 		fs.StringVar(&cfg.Host, "host", cfg.Host, "host to bind")
 		fs.IntVar(&cfg.Port, "port", cfg.Port, "port to bind")
 		fs.StringVar(&cfg.Token, "token", "", "API token")
@@ -30,13 +33,13 @@ func runServe(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	if !config.IsLocalHost(cfg.Host) && cfg.Token == "" && !unsafeNoToken {
+	if !config.IsLocalHost(cfg.Host) && cfg.Token == "" && cfg.RequireTokenOutsideLocalhost && !unsafeNoToken {
 		return ExitError{Code: 6, Err: fmt.Errorf("binding to %s requires --token or explicit --unsafe-no-token", cfg.Host)}
 	}
 	if cfg.Token != "" {
 		cfg.RequireToken = true
 	}
-	server := api.NewServer(translate.NewService(), cfg, web.Handler())
+	server := api.NewServer(newServiceWithConfig(loaded), cfg, web.Handler())
 	addr := net.JoinHostPort(cfg.Host, fmt.Sprint(cfg.Port))
 	httpServer := &http.Server{Addr: addr, Handler: server.Handler()}
 	errCh := make(chan error, 1)

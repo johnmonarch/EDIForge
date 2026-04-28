@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/openedi/ediforge/internal/schema"
-	"github.com/openedi/ediforge/internal/translate"
 )
 
 func runSchemas(ctx context.Context, args []string) error {
@@ -24,15 +23,19 @@ func runSchemas(ctx context.Context, args []string) error {
 }
 
 func runSchemasList(ctx context.Context, args []string) error {
+	cfg, err := loadConfig()
+	if err != nil {
+		return err
+	}
 	var pretty bool
-	_, _, err := parseFlagSet("schemas list", args, map[string]bool{"pretty": true}, func(fs *flag.FlagSet) {
+	_, _, err = parseFlagSet("schemas list", args, map[string]bool{"pretty": true}, func(fs *flag.FlagSet) {
 		fs.BoolVar(&pretty, "pretty", false, "pretty-print JSON")
 	})
 	if err != nil {
 		return err
 	}
 	_ = ctx
-	summaries, err := translate.NewService().Schemas.List()
+	summaries, err := newServiceWithConfig(cfg).Schemas.List()
 	if err != nil {
 		return ExitError{Code: 3, Err: err}
 	}

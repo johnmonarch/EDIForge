@@ -111,12 +111,74 @@ func TestHandlers(t *testing.T) {
 	})
 }
 
+func TestSecurityMiddleware(t *testing.T) {
+	x12Input := readFixture(t, "testdata/x12/850-basic.edi")
+
+	t.Run("requires token when configured", func(t *testing.T) {
+		handler := secureTestHandler(t, config.ServerConfig{
+			RequireToken: true,
+			Token:        "secret",
+			MaxBodyMB:    1,
+		})
+
+		rr := postJSON(t, handler, "/api/v1/detect", map[string]string{"input": x12Input})
+		assertStatus(t, rr, http.StatusUnauthorized)
+
+		data, err := json.Marshal(map[string]string{"input": x12Input})
+		if err != nil {
+			t.Fatal(err)
+		}
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/detect", strings.NewReader(string(data)))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer secret")
+		authed := httptest.NewRecorder()
+		handler.ServeHTTP(authed, req)
+		assertStatus(t, authed, http.StatusOK)
+	})
+
+	t.Run("enforces body size limit", func(t *testing.T) {
+		handler := secureTestHandler(t, config.ServerConfig{MaxBodyMB: 1})
+		payload := strings.Repeat("A", 1024*1024+1)
+
+		rr := postJSON(t, handler, "/api/v1/detect", map[string]string{"input": payload})
+
+		assertStatus(t, rr, http.StatusBadRequest)
+		var body Response[any]
+		decodeResponse(t, rr, &body)
+		if body.OK || len(body.Errors) == 0 || body.Errors[0].Code != "INVALID_JSON" {
+			t.Fatalf("response = %+v", body)
+		}
+	})
+
+	t.Run("cors disabled by default and opt-in only", func(t *testing.T) {
+		defaultHandler := secureTestHandler(t, config.ServerConfig{MaxBodyMB: 1})
+		defaultRR := httptest.NewRecorder()
+		defaultHandler.ServeHTTP(defaultRR, httptest.NewRequest(http.MethodOptions, "/api/v1/detect", nil))
+		if got := defaultRR.Header().Get("Access-Control-Allow-Origin"); got != "" {
+			t.Fatalf("default CORS origin = %q, want empty", got)
+		}
+
+		corsHandler := secureTestHandler(t, config.ServerConfig{MaxBodyMB: 1, CORSOrigin: "http://localhost:5173"})
+		corsRR := httptest.NewRecorder()
+		corsHandler.ServeHTTP(corsRR, httptest.NewRequest(http.MethodOptions, "/api/v1/detect", nil))
+		if got := corsRR.Header().Get("Access-Control-Allow-Origin"); got != "http://localhost:5173" {
+			t.Fatalf("configured CORS origin = %q", got)
+		}
+	})
+}
+
 func testHandler(t *testing.T) http.Handler {
+	t.Helper()
+
+	return secureTestHandler(t, config.ServerConfig{MaxBodyMB: 1})
+}
+
+func secureTestHandler(t *testing.T, cfg config.ServerConfig) http.Handler {
 	t.Helper()
 
 	service := translate.NewService()
 	service.Schemas.Roots = []string{filepath.Join(repoRoot(t), "schemas/examples")}
-	return NewServer(service, config.ServerConfig{MaxBodyMB: 1}, nil).Handler()
+	return NewServer(service, cfg, nil).Handler()
 }
 
 func postJSON(t *testing.T, handler http.Handler, path string, payload any) *httptest.ResponseRecorder {
