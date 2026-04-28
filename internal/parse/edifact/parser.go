@@ -3,6 +3,7 @@ package edifact
 import (
 	"context"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -10,12 +11,26 @@ import (
 )
 
 func Parse(ctx context.Context, input string, opts Options) (*model.Document, error) {
-	tokens, tokenizeErrs := Tokenize(input, opts)
+	return ParseReader(ctx, strings.NewReader(input), opts)
+}
+
+func ParseReader(ctx context.Context, r io.Reader, opts Options) (*model.Document, error) {
+	data, err := readAll(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	input := string(data)
+	delims := effectiveDelimiters(input, opts.Delimiters)
+	tokens, tokenizeErrs := tokenizeString(input, opts, delims)
+	return parseTokens(ctx, tokens, tokenizeErrs, opts, delims)
+}
+
+func parseTokens(ctx context.Context, tokens []Token, tokenizeErrs []model.EDIError, opts Options, delims model.Delimiters) (*model.Document, error) {
 	doc := &model.Document{
 		Standard: model.StandardEDIFACT,
 		Metadata: model.Metadata{
 			Segments:   len(tokens),
-			Delimiters: opts.Delimiters,
+			Delimiters: delims,
 		},
 	}
 	doc.Errors = append(doc.Errors, tokenizeErrs...)
@@ -135,6 +150,24 @@ func Parse(ctx context.Context, input string, opts Options) (*model.Document, er
 	}
 	summarize(doc)
 	return doc, nil
+}
+
+func readAll(ctx context.Context, r io.Reader) ([]byte, error) {
+	type result struct {
+		data []byte
+		err  error
+	}
+	ch := make(chan result, 1)
+	go func() {
+		data, err := io.ReadAll(r)
+		ch <- result{data: data, err: err}
+	}()
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case result := <-ch:
+		return result.data, result.err
+	}
 }
 
 func closeInterchange(doc *model.Document, interchange *model.Interchange, msg *model.Message) {

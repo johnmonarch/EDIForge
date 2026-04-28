@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "description": "Public-safe EDI fixture catalog for parser and translation validation. Paths are relative to this catalog file.",
+  "fixtures": [
+    {
+      "name": "x12-850-basic",
+      "path": "../x12/850-basic.edi",
+      "category": "valid",
+      "standard": "x12",
+      "documentType": "850",
+      "ok": true
+    },
+    {
+      "name": "x12-856-basic",
+      "path": "../x12/856-basic.edi",
+      "category": "valid",
+      "standard": "x12",
+      "documentType": "856",
+      "ok": true
+    },
+    {
+      "name": "edifact-orders-basic",
+      "path": "../edifact/orders-basic.edi",
+      "category": "valid",
+      "standard": "edifact",
+      "documentType": "ORDERS",
+      "ok": true
+    },
+    {
+      "name": "edifact-desadv-basic",
+      "path": "../edifact/desadv-basic.edi",
+      "category": "valid",
+      "standard": "edifact",
+      "documentType": "DESADV",
+      "ok": true
+    },
+    {
+      "name": "x12-mismatched-trailers",
+      "path": "../malformed/x12-mismatched-trailers.edi",
+      "category": "malformed",
+      "standard": "x12",
+      "documentType": "850",
+      "ok": false,
+      "errors": [
+        "X12_CONTROL_NUMBER_MISMATCH",
+        "X12_SEGMENT_COUNT_MISMATCH",
+        "X12_GROUP_COUNT_MISMATCH",
+        "X12_GROUP_CONTROL_NUMBER_MISMATCH",
+        "X12_INTERCHANGE_COUNT_MISMATCH",
+        "X12_INTERCHANGE_CONTROL_NUMBER_MISMATCH"
+      ]
+    },
+    {
+      "name": "edifact-mismatched-trailers",
+      "path": "../malformed/edifact-mismatched-trailers.edi",
+      "category": "malformed",
+      "standard": "edifact",
+      "documentType": "ORDERS",
+      "ok": false,
+      "errors": [
+        "EDIFACT_MESSAGE_REFERENCE_MISMATCH",
+        "EDIFACT_SEGMENT_COUNT_MISMATCH",
+        "EDIFACT_INTERCHANGE_COUNT_MISMATCH",
+        "EDIFACT_CONTROL_REFERENCE_MISMATCH"
+      ]
+    },
+    {
+      "name": "x12-unclosed-envelope",
+      "path": "partial/x12-unclosed-envelope.edi",
+      "category": "partial",
+      "standard": "x12",
+      "documentType": "850",
+      "ok": false,
+      "errors": [
+        "X12_MISSING_SE",
+        "X12_MISSING_GE",
+        "X12_MISSING_IEA"
+      ]
+    },
+    {
+      "name": "edifact-missing-message-trailer",
+      "path": "partial/edifact-missing-message-trailer.edi",
+      "category": "partial",
+      "standard": "edifact",
+      "documentType": "ORDERS",
+      "ok": false,
+      "errors": [
+        "EDIFACT_MISSING_UNT"
+      ]
+    },
+    {
+      "name": "x12-segment-outside-transaction",
+      "path": "warnings/x12-segment-outside-transaction.edi",
+      "category": "partial",
+      "standard": "x12",
+      "documentType": "850",
+      "ok": true,
+      "warnings": [
+        "X12_SEGMENT_OUTSIDE_TRANSACTION"
+      ]
+    }
+  ]
+}
