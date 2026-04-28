@@ -1,0 +1,37 @@
+name: Security-sensitive note
+description: Ask for a private security contact or report non-sensitive security documentation gaps.
+title: "[Security]: "
+labels:
+  - security
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include exploit details, raw EDI, customer data, credentials, partner identifiers, private file paths, or sensitive logs in a public issue.
+
+        Vulnerabilities that could expose EDI data, bypass local server protections, execute untrusted mapping logic, or read/write unintended files should be reported privately using SECURITY.md. If no private channel is available, open only a minimal issue asking for a security contact.
+  - type: checkboxes
+    id: public_safe
+    attributes:
+      label: Public issue safety
+      options:
+        - label: This issue does not contain vulnerability details, sensitive data, or exploit steps.
+          required: true
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: What do you need?
+      options:
+        - Private security contact
+        - Security documentation clarification
+        - Non-sensitive hardening suggestion
+        - Other public-safe security note
+    validations:
+      required: true
+  - type: textarea
+    id: note
+    attributes:
+      label: Public-safe note
+      description: Keep this high-level. Maintainers can follow up through a private channel if needed.
+    validations:
+      required: true

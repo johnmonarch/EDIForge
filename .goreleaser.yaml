@@ -38,6 +38,26 @@ archives:
 checksum:
   name_template: checksums.txt
 
+# Homebrew formula generation is staged. The initial tap exists at
+# github.com/johnmonarch/homebrew-tap; set skip_upload to false after providing
+# the release workflow a token that can write to that repository.
+brews:
+  - name: edi-json
+    ids:
+      - edi-json
+    repository:
+      owner: johnmonarch
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://github.com/johnmonarch/ediforge
+    description: Local-first EDI-to-JSON translator for X12 and UN/EDIFACT
+    license: Apache-2.0
+    skip_upload: true
+    install: |
+      bin.install "edi-json"
+    test: |
+      system "#{bin}/edi-json", "version"
+
 snapshot:
   version_template: "{{ incpatch .Version }}-next"
 

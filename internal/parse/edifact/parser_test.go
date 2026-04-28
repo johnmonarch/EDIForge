@@ -38,3 +38,85 @@ func TestTokenizeEDIFACTReleaseCharacter(t *testing.T) {
 		t.Fatalf("released value = %q", got)
 	}
 }
+
+func TestParseEDIFACTMalformedTrailerMismatches(t *testing.T) {
+	data, err := os.ReadFile("../../../testdata/malformed/edifact-mismatched-trailers.edi")
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, err := Parse(context.Background(), string(data), Options{Delimiters: model.Delimiters{Element: "+", Segment: "'", Component: ":", Release: "?"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertEDIFACTErrorCodes(t, doc.Errors,
+		"EDIFACT_MESSAGE_REFERENCE_MISMATCH",
+		"EDIFACT_SEGMENT_COUNT_MISMATCH",
+		"EDIFACT_INTERCHANGE_COUNT_MISMATCH",
+		"EDIFACT_CONTROL_REFERENCE_MISMATCH",
+	)
+	if len(doc.Interchanges) != 1 || len(doc.Interchanges[0].Messages) != 1 {
+		t.Fatalf("recovered envelope = %+v", doc.Interchanges)
+	}
+	if got := doc.Interchanges[0].Messages[0].SegmentCount; got != 3 {
+		t.Fatalf("recovered message segment count = %d", got)
+	}
+}
+
+func TestParseEDIFACTMalformedMissingUNT(t *testing.T) {
+	input := "UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1'UNH+1+ORDERS:D:96A:UN'BGM+220+PO12345+9'UNZ+1+1'"
+	doc, err := Parse(context.Background(), input, Options{Delimiters: model.Delimiters{Element: "+", Segment: "'", Component: ":", Release: "?"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assertEDIFACTErrorCodes(t, doc.Errors, "EDIFACT_MISSING_UNT")
+	if len(doc.Interchanges) != 1 || len(doc.Interchanges[0].Messages) != 1 {
+		t.Fatalf("recovered envelope = %+v", doc.Interchanges)
+	}
+	if got := doc.Metadata.Messages; got != 1 {
+		t.Fatalf("metadata messages = %d", got)
+	}
+}
+
+func FuzzParseEDIFACT(f *testing.F) {
+	seeds := []string{
+		"",
+		"UNA:+.? 'UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1'UNH+1+ORDERS:D:96A:UN'BGM+220+PO12345+9'UNT+3+1'UNZ+1+1'",
+		"UNH+1+ORDERS:D:96A:UN'BGM+220+PO12345+9'",
+		"UNB+UNOC:3+SENDER+RECEIVER+260427:1200+1?+bad",
+	}
+	for _, seed := range seeds {
+		f.Add(seed)
+	}
+
+	opts := Options{Delimiters: model.Delimiters{Element: "+", Segment: "'", Component: ":", Release: "?"}, IncludeRaw: true, IncludeOffsets: true}
+	f.Fuzz(func(t *testing.T, input string) {
+		doc, err := Parse(context.Background(), input, opts)
+		if err != nil {
+			t.Fatalf("Parse returned unexpected error: %v", err)
+		}
+		if doc == nil {
+			t.Fatal("Parse returned nil document")
+		}
+		if doc.Standard != model.StandardEDIFACT {
+			t.Fatalf("standard = %q", doc.Standard)
+		}
+		if doc.Metadata.Segments < 0 {
+			t.Fatalf("negative segment count = %d", doc.Metadata.Segments)
+		}
+	})
+}
+
+func assertEDIFACTErrorCodes(t *testing.T, errs []model.EDIError, want ...string) {
+	t.Helper()
+	got := make(map[string]bool, len(errs))
+	for _, err := range errs {
+		got[err.Code] = true
+	}
+	for _, code := range want {
+		if !got[code] {
+			t.Fatalf("missing error code %s in %+v", code, errs)
+		}
+	}
+}

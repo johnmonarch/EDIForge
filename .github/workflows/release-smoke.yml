@@ -1,0 +1,85 @@
+name: Release Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to verify, for example v0.1.0
+        required: true
+        type: string
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  IMAGE: ghcr.io/johnmonarch/ediforge
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag
+        id: tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          tag="${RELEASE_TAG:-$INPUT_TAG}"
+          if [ -z "$tag" ]; then
+            echo "No release tag was provided." >&2
+            exit 1
+          fi
+          version="${tag#v}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Install released CLI and verify version
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          GOBIN="$RUNNER_TEMP/bin" go install "github.com/johnmonarch/ediforge/cmd/edi-json@$TAG"
+          output="$("$RUNNER_TEMP/bin/edi-json" version)"
+          echo "$output"
+          if ! printf '%s\n' "$output" | grep -Eq "^edi-json ${VERSION}$"; then
+            echo "Installed edi-json did not report expected version ${VERSION}." >&2
+            exit 1
+          fi
+
+      - name: Verify GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          assets="$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name')"
+          printf '%s\n' "$assets"
+          if [ -z "$assets" ]; then
+            echo "Release $TAG has no assets." >&2
+            exit 1
+          fi
+          if ! printf '%s\n' "$assets" | grep -Fxq "checksums.txt"; then
+            echo "Release $TAG is missing checksums.txt." >&2
+            exit 1
+          fi
+
+      - name: Attempt Docker manifest check
+        continue-on-error: true
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          docker buildx imagetools inspect "${IMAGE}:${VERSION}"

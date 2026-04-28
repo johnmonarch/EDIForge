@@ -1,0 +1,71 @@
+name: Bug report
+description: Report reproducible behavior that looks incorrect.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve EDIForge. Do not include real customer EDI, partner IDs, account numbers, names, addresses, or proprietary implementation-guide text. Use synthetic input or redact sensitive fields.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Data safety
+      options:
+        - label: I am using synthetic or safely redacted examples.
+          required: true
+        - label: This is not a vulnerability or security-sensitive report.
+          required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the incorrect behavior and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, API calls, or UI steps with synthetic input.
+      placeholder: |
+        1. Run `edi-json ...`
+        2. Provide this synthetic input ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include EDIForge version or commit, OS, install method, and Go version if built from source.
+      placeholder: |
+        EDIForge:
+        OS:
+        Install method:
+        Go:
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      multiple: true
+      options:
+        - CLI
+        - REST API
+        - Web UI
+        - Parser
+        - Schema or mapping
+        - Documentation
+        - Build or release artifact
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: Paste logs, JSON output, screenshots, or error text after removing sensitive data.
+      render: shell

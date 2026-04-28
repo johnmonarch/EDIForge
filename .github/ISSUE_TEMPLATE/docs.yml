@@ -1,0 +1,32 @@
+name: Documentation issue
+description: Report missing, unclear, or incorrect documentation.
+title: "[Docs]: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Page or file
+      description: Link or name the README, docs page, comment, example, or help text involved.
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What should change?
+      description: Describe what is missing, incorrect, confusing, or outdated.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested wording or example
+      description: Optional. Keep sample EDI, schemas, and maps synthetic and redistributable.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Content safety
+      options:
+        - label: Any examples I provide are synthetic, public-safe, or clearly redistributable.
+          required: true

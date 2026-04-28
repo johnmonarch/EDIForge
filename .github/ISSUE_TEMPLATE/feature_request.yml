@@ -1,0 +1,53 @@
+name: Feature request
+description: Propose a practical improvement or new capability.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        EDIForge prioritizes local-first operation, parser correctness, redistributable examples, and a shared translation core for CLI, API, and web usage.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or workflow
+      description: Describe the workflow this would improve. Keep examples synthetic and public-safe.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Explain the behavior, command, endpoint, UI change, schema support, or output shape you want.
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Primary surface
+      options:
+        - CLI
+        - REST API
+        - Web UI
+        - Parser
+        - Schema or mapping
+        - Documentation
+        - Packaging
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints
+      options:
+        - label: This can work without telemetry or normal-workflow outbound network calls.
+          required: true
+        - label: This does not require bundling paid standards text, proprietary partner maps, or restricted code lists.
+          required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Note any workaround or narrower version that would still help.

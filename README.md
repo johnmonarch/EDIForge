@@ -42,6 +42,13 @@ Install with Go:
 go install github.com/johnmonarch/ediforge/cmd/edi-json@latest
 ```
 
+Install with Homebrew:
+
+```bash
+brew tap johnmonarch/tap
+brew install edi-json
+```
+
 Release binaries and container images, when published, are available from:
 
 - [GitHub Releases](https://github.com/johnmonarch/ediforge/releases)
@@ -191,6 +198,7 @@ Official container images publish to `ghcr.io/johnmonarch/ediforge` from version
 
 ## Documentation
 
+- [Install](docs/install.md)
 - [Quickstart](docs/quickstart.md)
 - [CLI](docs/cli.md)
 - [REST API](docs/api.md)
@@ -200,6 +208,7 @@ Official container images publish to `ghcr.io/johnmonarch/ediforge` from version
 - [Validation](docs/validation.md)
 - [Docker](docs/docker.md)
 - [Standards and IP policy](docs/standards-ip-policy.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## Contributing
 
