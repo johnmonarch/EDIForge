@@ -46,6 +46,9 @@ func detectX12(data []byte, forced bool) (Result, error) {
 	if len(s) >= 3 && strings.HasPrefix(s, "ISA") {
 		delims, version := x12Delimiters(s)
 		confidence := 0.98
+		if len(s) < 106 {
+			confidence = 0.75
+		}
 		if !strings.Contains(s, delims.Segment+"GS"+delims.Element) && !strings.Contains(s, delims.Segment+"ST"+delims.Element) {
 			confidence = 0.75
 		}
@@ -84,23 +87,11 @@ func x12Delimiters(s string) (model.Delimiters, string) {
 		if r := string(s[82]); r != "U" && r != "^" {
 			delims.Repetition = r
 		}
-		if len(s) >= 85 {
-			version = strings.TrimSpace(s[84:89])
-		}
+		version = strings.TrimSpace(s[84:89])
 		return delims, version
 	}
-	if idx := strings.Index(s, "~"); idx >= 0 {
-		delims.Segment = "~"
-	} else if idx := strings.Index(s, "\n"); idx >= 0 {
-		delims.Segment = "\n"
-	}
-	fields := strings.SplitN(s, delims.Segment, 2)
-	isa := strings.Split(fields[0], delims.Element)
-	if len(isa) > 16 {
-		delims.Component = isa[16]
-	}
-	if len(isa) > 12 {
-		version = strings.TrimSpace(isa[12])
+	if len(s) >= 89 {
+		version = strings.TrimSpace(s[84:89])
 	}
 	return delims, version
 }

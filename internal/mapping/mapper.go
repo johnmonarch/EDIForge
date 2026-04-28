@@ -38,17 +38,17 @@ func Map(doc *model.Document, s *schema.Schema) (map[string]any, []model.EDIWarn
 		}
 		if strings.Contains(target, "[]") {
 			if err := mapArrayRule(output, target, rule, segments); err != nil {
-				errors = append(errors, mappingError(doc.Standard, target, err))
+				errors = append(errors, mappingError(doc.Standard, target, rule.Path, err))
 			}
 			continue
 		}
 		value, required, err := evalRule(rule.Path, rule.Transforms, segments)
 		if err != nil {
-			errors = append(errors, mappingError(doc.Standard, target, err))
+			errors = append(errors, mappingError(doc.Standard, target, rule.Path, err))
 			continue
 		}
 		if required && value == "" {
-			errors = append(errors, requiredError(doc.Standard, target))
+			errors = append(errors, requiredError(doc.Standard, target, rule.Path))
 			continue
 		}
 		if value == "" {
@@ -64,11 +64,11 @@ func Map(doc *model.Document, s *schema.Schema) (map[string]any, []model.EDIWarn
 		}
 		value, required, err := evalExpression(expression, segments)
 		if err != nil {
-			errors = append(errors, mappingError(doc.Standard, target, err))
+			errors = append(errors, mappingError(doc.Standard, target, expression, err))
 			continue
 		}
 		if required && value == "" {
-			errors = append(errors, requiredError(doc.Standard, target))
+			errors = append(errors, requiredError(doc.Standard, target, expression))
 			continue
 		}
 		if value == "" {
@@ -515,21 +515,25 @@ func setNestedValue(output map[string]any, path, value string) {
 	current[parts[len(parts)-1]] = value
 }
 
-func mappingError(standard model.Standard, target string, err error) model.EDIError {
+func mappingError(standard model.Standard, target, source string, err error) model.EDIError {
 	return model.EDIError{
 		Severity: "error",
 		Code:     "MAPPING_EXPRESSION_FAILED",
-		Message:  fmt.Sprintf("%s: %v", target, err),
+		Message:  fmt.Sprintf("mapping target %q from source path %q failed: %v", target, source, err),
 		Standard: string(standard),
+		Element:  target,
+		Hint:     fmt.Sprintf("Check schema mapping path %q for target %q.", source, target),
 	}
 }
 
-func requiredError(standard model.Standard, target string) model.EDIError {
+func requiredError(standard model.Standard, target, source string) model.EDIError {
 	return model.EDIError{
 		Severity: "error",
 		Code:     "MAPPING_REQUIRED_FIELD_MISSING",
-		Message:  fmt.Sprintf("required mapped field %q was empty", target),
+		Message:  fmt.Sprintf("required mapped field %q was empty from source path %q", target, source),
 		Standard: string(standard),
+		Element:  target,
+		Hint:     fmt.Sprintf("Check whether source path %q exists before mapping target %q.", source, target),
 	}
 }
 

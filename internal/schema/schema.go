@@ -29,6 +29,7 @@ type SegmentRule struct {
 	Tag      string            `json:"tag"`
 	Purpose  string            `json:"purpose,omitempty"`
 	Required bool              `json:"required,omitempty"`
+	Min      int               `json:"min,omitempty"`
 	Max      int               `json:"max,omitempty"`
 	Loop     string            `json:"loop,omitempty"`
 	Maps     map[string]string `json:"maps,omitempty"`

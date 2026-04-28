@@ -1,6 +1,7 @@
 package edifact
 
 import (
+	"io"
 	"strings"
 	"unicode"
 
@@ -22,20 +23,65 @@ type Options struct {
 }
 
 func Tokenize(input string, opts Options) ([]Token, []model.EDIError) {
-	delims := opts.Delimiters
+	return TokenizeReader(strings.NewReader(input), opts)
+}
+
+func TokenizeReader(r io.Reader, opts Options) ([]Token, []model.EDIError) {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, []model.EDIError{{
+			Severity: "error",
+			Code:     "EDIFACT_READ_FAILED",
+			Message:  err.Error(),
+			Standard: string(model.StandardEDIFACT),
+		}}
+	}
+	input := string(data)
+	delims := effectiveDelimiters(input, opts.Delimiters)
+	return tokenizeString(input, opts, delims)
+}
+
+func effectiveDelimiters(input string, delims model.Delimiters) model.Delimiters {
 	if delims.Element == "" {
-		delims.Element = "+"
+		if len(input) >= 9 && strings.HasPrefix(input, "UNA") {
+			delims.Element = input[4:5]
+		} else {
+			delims.Element = "+"
+		}
 	}
 	if delims.Segment == "" {
-		delims.Segment = "'"
+		if len(input) >= 9 && strings.HasPrefix(input, "UNA") {
+			delims.Segment = input[8:9]
+		} else {
+			delims.Segment = "'"
+		}
 	}
 	if delims.Component == "" {
-		delims.Component = ":"
+		if len(input) >= 9 && strings.HasPrefix(input, "UNA") {
+			delims.Component = input[3:4]
+		} else {
+			delims.Component = ":"
+		}
 	}
 	if delims.Release == "" {
-		delims.Release = "?"
+		if len(input) >= 9 && strings.HasPrefix(input, "UNA") {
+			delims.Release = input[6:7]
+		} else {
+			delims.Release = "?"
+		}
 	}
+	if delims.DecimalMark == "" {
+		if len(input) >= 9 && strings.HasPrefix(input, "UNA") {
+			delims.DecimalMark = input[5:6]
+		} else {
+			delims.DecimalMark = "."
+		}
+	}
+	return delims
+}
 
+func tokenizeString(input string, opts Options, delims model.Delimiters) ([]Token, []model.EDIError) {
+	opts.Delimiters = delims
 	var tokens []Token
 	var errs []model.EDIError
 	position := 0

@@ -1,6 +1,7 @@
 package translate
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -63,7 +64,7 @@ func (s *Service) Translate(ctx context.Context, input Input, opts TranslateOpti
 		}, err
 	}
 
-	doc, err := parse(ctx, string(data), detected, opts)
+	doc, err := parse(ctx, bytes.NewReader(data), detected, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +80,13 @@ func (s *Service) Translate(ctx context.Context, input Input, opts TranslateOpti
 		Errors:   doc.Errors,
 		Metadata: doc.Metadata,
 	}
+	envelopeWarnings, envelopeErrors := schemavalidate.Envelope(doc)
+	result.Warnings = appendWarnings(result.Warnings, envelopeWarnings)
+	result.Errors = appendErrors(result.Errors, envelopeErrors)
+	result.OK = len(result.Errors) == 0
 	result.DocumentType = firstDocumentType(doc)
 
-	if len(doc.Errors) > 0 && !opts.AllowPartial {
+	if len(result.Errors) > 0 && !opts.AllowPartial {
 		if opts.Mode == model.ModeAnnotated {
 			result.Result = s.annotatedResult(doc, result, opts)
 		} else {
@@ -184,16 +189,16 @@ func (s *Service) Validate(ctx context.Context, input Input, opts ValidateOption
 	}, err
 }
 
-func parse(ctx context.Context, input string, detected detect.Result, opts TranslateOptions) (*model.Document, error) {
+func parse(ctx context.Context, input io.Reader, detected detect.Result, opts TranslateOptions) (*model.Document, error) {
 	switch detected.Standard {
 	case model.StandardX12:
-		return x12.Parse(ctx, input, x12.Options{
+		return x12.ParseReader(ctx, input, x12.Options{
 			Delimiters:     detected.Delimiters,
 			IncludeRaw:     opts.IncludeRaw,
 			IncludeOffsets: opts.IncludeOffsets,
 		})
 	case model.StandardEDIFACT:
-		return edifact.Parse(ctx, input, edifact.Options{
+		return edifact.ParseReader(ctx, input, edifact.Options{
 			Delimiters:     detected.Delimiters,
 			IncludeRaw:     opts.IncludeRaw,
 			IncludeOffsets: opts.IncludeOffsets,
@@ -237,4 +242,42 @@ func firstDocumentType(doc *model.Document) string {
 		}
 	}
 	return ""
+}
+
+func appendWarnings(existing []model.EDIWarning, additions []model.EDIWarning) []model.EDIWarning {
+	for _, warning := range additions {
+		if hasWarning(existing, warning) {
+			continue
+		}
+		existing = append(existing, warning)
+	}
+	return existing
+}
+
+func appendErrors(existing []model.EDIError, additions []model.EDIError) []model.EDIError {
+	for _, ediErr := range additions {
+		if hasError(existing, ediErr) {
+			continue
+		}
+		existing = append(existing, ediErr)
+	}
+	return existing
+}
+
+func hasWarning(warnings []model.EDIWarning, candidate model.EDIWarning) bool {
+	for _, warning := range warnings {
+		if warning.Code == candidate.Code && warning.Segment == candidate.Segment && warning.Element == candidate.Element {
+			return true
+		}
+	}
+	return false
+}
+
+func hasError(errors []model.EDIError, candidate model.EDIError) bool {
+	for _, ediErr := range errors {
+		if ediErr.Code == candidate.Code && ediErr.Segment == candidate.Segment && ediErr.Element == candidate.Element {
+			return true
+		}
+	}
+	return false
 }

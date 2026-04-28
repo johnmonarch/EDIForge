@@ -1,6 +1,7 @@
 package x12
 
 import (
+	"io"
 	"strings"
 	"unicode"
 
@@ -22,17 +23,58 @@ type Options struct {
 }
 
 func Tokenize(input string, opts Options) ([]Token, []model.EDIError) {
-	delims := opts.Delimiters
+	return TokenizeReader(strings.NewReader(input), opts)
+}
+
+func TokenizeReader(r io.Reader, opts Options) ([]Token, []model.EDIError) {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, []model.EDIError{{
+			Severity: "error",
+			Code:     "X12_READ_FAILED",
+			Message:  err.Error(),
+			Standard: string(model.StandardX12),
+		}}
+	}
+	input := string(data)
+	delims := effectiveDelimiters(input, opts.Delimiters)
+	return tokenizeString(input, opts, delims)
+}
+
+func effectiveDelimiters(input string, delims model.Delimiters) model.Delimiters {
 	if delims.Element == "" {
-		delims.Element = "*"
+		if len(input) > 3 && strings.HasPrefix(input, "ISA") {
+			delims.Element = input[3:4]
+		} else {
+			delims.Element = "*"
+		}
 	}
 	if delims.Segment == "" {
-		delims.Segment = "~"
+		if len(input) >= 106 && strings.HasPrefix(input, "ISA") {
+			delims.Segment = input[105:106]
+		} else {
+			delims.Segment = "~"
+		}
 	}
 	if delims.Component == "" {
-		delims.Component = ">"
+		if len(input) >= 105 && strings.HasPrefix(input, "ISA") {
+			delims.Component = input[104:105]
+		} else {
+			delims.Component = ">"
+		}
 	}
+	if delims.Repetition == "" {
+		delims.Repetition = "^"
+		if len(input) >= 83 && strings.HasPrefix(input, "ISA") {
+			if repetition := input[82:83]; repetition != "U" && repetition != "^" {
+				delims.Repetition = repetition
+			}
+		}
+	}
+	return delims
+}
 
+func tokenizeString(input string, opts Options, delims model.Delimiters) ([]Token, []model.EDIError) {
 	var tokens []Token
 	var errs []model.EDIError
 	position := 0
