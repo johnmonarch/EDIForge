@@ -1,0 +1,274 @@
+{
+  "id": "x12-214-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 214 Basic Shipment Status",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 214 transportation carrier shipment status message into semantic JSON.",
+  "standard": "x12",
+  "transaction": "214",
+  "version": "004010",
+  "documentType": "shipment_status",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "B10",
+      "purpose": "shipment_status_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "B1001": "shipmentId",
+        "B1002": "referenceNumber",
+        "B1003": "carrierCode"
+      }
+    },
+    {
+      "tag": "L11",
+      "purpose": "references",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "L1101": "references[].value",
+        "L1102": "references[].qualifier"
+      }
+    },
+    {
+      "tag": "N1",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N101": "parties[].role",
+        "N102": "parties[].name",
+        "N103": "parties[].idQualifier",
+        "N104": "parties[].id"
+      }
+    },
+    {
+      "tag": "N3",
+      "purpose": "party_address_lines",
+      "required": false,
+      "max": 2,
+      "loop": "parties",
+      "maps": {
+        "N301": "parties[].address.line1"
+      }
+    },
+    {
+      "tag": "N4",
+      "purpose": "party_location",
+      "required": false,
+      "max": 1,
+      "loop": "parties",
+      "maps": {
+        "N401": "parties[].address.city",
+        "N402": "parties[].address.state",
+        "N403": "parties[].address.postalCode",
+        "N404": "parties[].address.country"
+      }
+    },
+    {
+      "tag": "LX",
+      "purpose": "status_loop",
+      "required": true,
+      "max": 100000,
+      "loop": "statusEvents",
+      "maps": {
+        "LX01": "statusEvents[].sequence"
+      }
+    },
+    {
+      "tag": "AT7",
+      "purpose": "shipment_status_detail",
+      "required": true,
+      "max": 1,
+      "loop": "statusEvents",
+      "maps": {
+        "AT701": "statusEvents[].statusCode",
+        "AT705": "statusEvents[].statusDate",
+        "AT706": "statusEvents[].statusTime",
+        "AT707": "statusEvents[].timeZone"
+      }
+    },
+    {
+      "tag": "MS1",
+      "purpose": "status_location",
+      "required": false,
+      "max": 1,
+      "loop": "statusEvents",
+      "maps": {
+        "MS101": "statusEvents[].location.city",
+        "MS102": "statusEvents[].location.state",
+        "MS103": "statusEvents[].location.country"
+      }
+    },
+    {
+      "tag": "MS2",
+      "purpose": "equipment_identification",
+      "required": false,
+      "max": 1,
+      "loop": "statusEvents",
+      "maps": {
+        "MS201": "statusEvents[].equipment.initial",
+        "MS202": "statusEvents[].equipment.number"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "shipment_status"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "214"
+    },
+    "shipmentId": {
+      "path": "B10[0].B1001",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "referenceNumber": {
+      "path": "B10[0].B1002",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "carrierCode": {
+      "path": "B10[0].B1003",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "purchaseOrderNumber": {
+      "path": "L11[0].L1101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipper.name": {
+      "path": "N1[0].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].role": {
+      "path": "N1[].N101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].name": {
+      "path": "N1[].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.city": {
+      "path": "N1[] > N4[0].N401",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "statusEvents[].sequence": {
+      "path": "LX[].LX01",
+      "transforms": [
+        "integer"
+      ]
+    },
+    "statusEvents[].statusCode": {
+      "path": "LX[] > AT7[0].AT701",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "statusEvents[].statusDate": {
+      "path": "LX[] > AT7[0].AT705",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "statusEvents[].statusTime": {
+      "path": "LX[] > AT7[0].AT706",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "statusEvents[].location.city": {
+      "path": "LX[] > MS1[0].MS101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "statusEvents[].equipment.number": {
+      "path": "LX[] > MS2[0].MS202",
+      "transforms": [
+        "trim"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "shipmentId"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "shipmentId": {
+        "type": "string",
+        "required": true
+      },
+      "referenceNumber": {
+        "type": "string"
+      },
+      "carrierCode": {
+        "type": "string"
+      },
+      "purchaseOrderNumber": {
+        "type": "string"
+      },
+      "shipper": {
+        "type": "object"
+      },
+      "parties": {
+        "type": "array"
+      },
+      "statusEvents": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "B10",
+        "LX",
+        "AT7"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*SENDER         *ZZ*RECEIVER       *260427*1220*U*00401*000000214*0*T*>~GS*QM*SENDER*RECEIVER*20260427*1220*214*X*004010~ST*214*0001~B10*SHIP-10001*PRO-10001*EXCA~L11*PO-10001*PO~N1*SH*Example Shipper*92*SHIPPER01~N3*10 Origin Road~N4*Greenville*SC*29601*US~LX*1~AT7*X3****20260427*1220*ET~MS1*Greenville*SC*US~MS2*EXCA*TRAILER100~SE*11*0001~GE*1*214~IEA*1*000000214~"
+}

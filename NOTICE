@@ -1,0 +1,14 @@
+EDIForge
+Copyright 2026 EDIForge contributors
+
+This product includes software, documentation, static web assets, scripts,
+and example schema metadata developed by EDIForge contributors.
+
+EDIForge is licensed under the Apache License, Version 2.0.
+
+Bundled schema examples are public-safe starter templates. They are not
+official X12 implementation guides, UN/EDIFACT directories, or trading-partner
+specifications, and they do not grant rights to use restricted standards
+materials. Users are responsible for ensuring they have rights to any external
+schemas, mappings, guides, code lists, or partner overlays they import.
+

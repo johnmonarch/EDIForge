@@ -1,0 +1,277 @@
+{
+  "interchanges": [
+    {
+      "controlNumber": "000000001",
+      "groups": [
+        {
+          "controlNumber": "1",
+          "functionalId": "PO",
+          "transactions": [
+            {
+              "controlNumber": "0001",
+              "segmentCount": 5,
+              "segments": [
+                {
+                  "elements": [
+                    {
+                      "index": 1,
+                      "value": "850"
+                    },
+                    {
+                      "index": 2,
+                      "value": "0001"
+                    }
+                  ],
+                  "position": 3,
+                  "tag": "ST"
+                },
+                {
+                  "elements": [
+                    {
+                      "index": 1,
+                      "value": "00"
+                    },
+                    {
+                      "index": 2,
+                      "value": "SA"
+                    },
+                    {
+                      "index": 3,
+                      "value": "PO12345"
+                    },
+                    {
+                      "index": 4
+                    },
+                    {
+                      "index": 5,
+                      "value": "20260427"
+                    }
+                  ],
+                  "position": 4,
+                  "tag": "BEG"
+                },
+                {
+                  "elements": [
+                    {
+                      "index": 1,
+                      "value": "BY"
+                    },
+                    {
+                      "index": 2,
+                      "value": "Example Buyer"
+                    },
+                    {
+                      "index": 3,
+                      "value": "92"
+                    },
+                    {
+                      "index": 4,
+                      "value": "BUYER01"
+                    }
+                  ],
+                  "position": 5,
+                  "tag": "N1"
+                },
+                {
+                  "elements": [
+                    {
+                      "index": 1,
+                      "value": "ST"
+                    },
+                    {
+                      "index": 2,
+                      "value": "Example DC"
+                    },
+                    {
+                      "index": 3,
+                      "value": "92"
+                    },
+                    {
+                      "index": 4,
+                      "value": "SHIPTO01"
+                    }
+                  ],
+                  "position": 6,
+                  "tag": "N1"
+                },
+                {
+                  "elements": [
+                    {
+                      "index": 1,
+                      "value": "5"
+                    },
+                    {
+                      "index": 2,
+                      "value": "0001"
+                    }
+                  ],
+                  "position": 7,
+                  "tag": "SE"
+                }
+              ],
+              "type": "850",
+              "version": "004010"
+            }
+          ],
+          "version": "004010"
+        }
+      ],
+      "rawEnvelope": [
+        {
+          "elements": [
+            {
+              "index": 1,
+              "value": "00"
+            },
+            {
+              "index": 2,
+              "value": "          "
+            },
+            {
+              "index": 3,
+              "value": "00"
+            },
+            {
+              "index": 4,
+              "value": "          "
+            },
+            {
+              "index": 5,
+              "value": "ZZ"
+            },
+            {
+              "index": 6,
+              "value": "SENDER         "
+            },
+            {
+              "index": 7,
+              "value": "ZZ"
+            },
+            {
+              "index": 8,
+              "value": "RECEIVER       "
+            },
+            {
+              "index": 9,
+              "value": "260427"
+            },
+            {
+              "index": 10,
+              "value": "1200"
+            },
+            {
+              "index": 11,
+              "value": "U"
+            },
+            {
+              "index": 12,
+              "value": "00401"
+            },
+            {
+              "index": 13,
+              "value": "000000001"
+            },
+            {
+              "index": 14,
+              "value": "0"
+            },
+            {
+              "index": 15,
+              "value": "T"
+            },
+            {
+              "index": 16,
+              "value": ">"
+            }
+          ],
+          "position": 1,
+          "tag": "ISA"
+        },
+        {
+          "elements": [
+            {
+              "index": 1,
+              "value": "PO"
+            },
+            {
+              "index": 2,
+              "value": "SENDER"
+            },
+            {
+              "index": 3,
+              "value": "RECEIVER"
+            },
+            {
+              "index": 4,
+              "value": "20260427"
+            },
+            {
+              "index": 5,
+              "value": "1200"
+            },
+            {
+              "index": 6,
+              "value": "1"
+            },
+            {
+              "index": 7,
+              "value": "X"
+            },
+            {
+              "index": 8,
+              "value": "004010"
+            }
+          ],
+          "position": 2,
+          "tag": "GS"
+        },
+        {
+          "elements": [
+            {
+              "index": 1,
+              "value": "1"
+            },
+            {
+              "index": 2,
+              "value": "1"
+            }
+          ],
+          "position": 8,
+          "tag": "GE"
+        },
+        {
+          "elements": [
+            {
+              "index": 1,
+              "value": "1"
+            },
+            {
+              "index": 2,
+              "value": "000000001"
+            }
+          ],
+          "position": 9,
+          "tag": "IEA"
+        }
+      ],
+      "receiverId": "RECEIVER",
+      "senderId": "SENDER",
+      "standard": "x12"
+    }
+  ],
+  "metadata": {
+    "delimiters": {
+      "component": ">",
+      "element": "*",
+      "repetition": "^",
+      "segment": "~"
+    },
+    "groups": 1,
+    "mode": "structural",
+    "segments": 9,
+    "transactions": 1,
+    "translatedBy": "EDIForge"
+  },
+  "standard": "x12",
+  "version": "00401"
+}

@@ -1,0 +1,277 @@
+{
+  "id": "x12-850-basic",
+  "schemaVersion": "0.1.0",
+  "name": "X12 850 Basic Purchase Order",
+  "description": "Public-safe synthetic starter schema for mapping a basic X12 850 purchase order into semantic JSON.",
+  "standard": "x12",
+  "transaction": "850",
+  "version": "004010",
+  "documentType": "purchase_order",
+  "source": "EDIForge community synthetic example",
+  "license": "Apache-2.0",
+  "ipPolicy": "This file is not an official X12 implementation guide and does not include proprietary partner requirements or restricted code lists.",
+  "metadata": {
+    "createdFor": "EDIForge MVP scaffold",
+    "safeForPublicExamples": true
+  },
+  "segments": [
+    {
+      "tag": "BEG",
+      "purpose": "purchase_order_header",
+      "required": true,
+      "max": 1,
+      "maps": {
+        "BEG01": "purposeCode",
+        "BEG02": "orderType",
+        "BEG03": "purchaseOrderNumber",
+        "BEG05": "orderDate"
+      }
+    },
+    {
+      "tag": "REF",
+      "purpose": "references",
+      "required": false,
+      "max": 20,
+      "maps": {
+        "REF01": "references[].qualifier",
+        "REF02": "references[].value"
+      }
+    },
+    {
+      "tag": "N1",
+      "purpose": "parties",
+      "required": false,
+      "max": 20,
+      "loop": "parties",
+      "maps": {
+        "N101": "parties[].role",
+        "N102": "parties[].name",
+        "N103": "parties[].idQualifier",
+        "N104": "parties[].id"
+      }
+    },
+    {
+      "tag": "N3",
+      "purpose": "party_address_lines",
+      "required": false,
+      "max": 2,
+      "loop": "parties",
+      "maps": {
+        "N301": "parties[].address.line1",
+        "N302": "parties[].address.line2"
+      }
+    },
+    {
+      "tag": "N4",
+      "purpose": "party_location",
+      "required": false,
+      "max": 1,
+      "loop": "parties",
+      "maps": {
+        "N401": "parties[].address.city",
+        "N402": "parties[].address.state",
+        "N403": "parties[].address.postalCode",
+        "N404": "parties[].address.country"
+      }
+    },
+    {
+      "tag": "PO1",
+      "purpose": "line_item",
+      "required": false,
+      "max": 100000,
+      "loop": "lineItems",
+      "maps": {
+        "PO101": "lineItems[].lineNumber",
+        "PO102": "lineItems[].quantity",
+        "PO103": "lineItems[].unitOfMeasure",
+        "PO104": "lineItems[].unitPrice",
+        "PO106": "lineItems[].productIds[].qualifier",
+        "PO107": "lineItems[].productIds[].value"
+      }
+    },
+    {
+      "tag": "CTT",
+      "purpose": "transaction_summary",
+      "required": false,
+      "max": 1,
+      "maps": {
+        "CTT01": "summary.lineItemCount"
+      }
+    }
+  ],
+  "mapping": {
+    "documentType": {
+      "literal": "purchase_order"
+    },
+    "standard": {
+      "literal": "x12"
+    },
+    "sourceType": {
+      "literal": "850"
+    },
+    "purchaseOrderNumber": {
+      "path": "BEG[0].BEG03",
+      "transforms": [
+        "trim",
+        "required"
+      ]
+    },
+    "orderDate": {
+      "path": "BEG[0].BEG05",
+      "transforms": [
+        "date:yyyyMMdd"
+      ]
+    },
+    "buyer.name": {
+      "path": "N1[N101='BY'].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "buyer.id": {
+      "path": "N1[N101='BY'].N104",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.name": {
+      "path": "N1[N101='ST'].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].role": {
+      "path": "N1[].N101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].name": {
+      "path": "N1[].N102",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].id": {
+      "path": "N1[].N104",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.line1": {
+      "path": "N1[] > N3[0].N301",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.city": {
+      "path": "N1[] > N4[0].N401",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "parties[].address.state": {
+      "path": "N1[] > N4[0].N402",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "parties[].address.postalCode": {
+      "path": "N1[] > N4[0].N403",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.address.line1": {
+      "path": "N1[N101='ST'] > N3[0].N301",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.address.city": {
+      "path": "N1[N101='ST'] > N4[0].N401",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "shipTo.address.state": {
+      "path": "N1[N101='ST'] > N4[0].N402",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "lineItems[].lineNumber": {
+      "path": "PO1[].PO101",
+      "transforms": [
+        "trim"
+      ]
+    },
+    "lineItems[].quantity": {
+      "path": "PO1[].PO102",
+      "transforms": [
+        "decimal"
+      ]
+    },
+    "lineItems[].unitOfMeasure": {
+      "path": "PO1[].PO103",
+      "transforms": [
+        "upper"
+      ]
+    },
+    "lineItems[].unitPrice": {
+      "path": "PO1[].PO104",
+      "transforms": [
+        "decimal"
+      ]
+    }
+  },
+  "output": {
+    "type": "object",
+    "required": [
+      "documentType",
+      "standard",
+      "sourceType",
+      "purchaseOrderNumber"
+    ],
+    "fields": {
+      "documentType": {
+        "type": "string"
+      },
+      "standard": {
+        "type": "string"
+      },
+      "sourceType": {
+        "type": "string"
+      },
+      "purchaseOrderNumber": {
+        "type": "string",
+        "required": true
+      },
+      "orderDate": {
+        "type": "date",
+        "format": "yyyyMMdd"
+      },
+      "buyer": {
+        "type": "object"
+      },
+      "shipTo": {
+        "type": "object"
+      },
+      "lineItems": {
+        "type": "array"
+      }
+    }
+  },
+  "validation": {
+    "syntax": true,
+    "schema": {
+      "requiredSegments": [
+        "BEG"
+      ],
+      "maxRepeats": true,
+      "controlNumbers": true
+    },
+    "codeLists": []
+  },
+  "exampleInput": "ISA*00*          *00*          *ZZ*SENDER         *ZZ*RECEIVER       *260427*1200*U*00401*000000001*0*T*>~GS*PO*SENDER*RECEIVER*20260427*1200*1*X*004010~ST*850*0001~BEG*00*SA*PO-10001**20260427~N1*BY*Example Buyer*92*BUYER01~N1*ST*Example Ship To*92*SHIPTO01~N3*100 Warehouse Road~N4*Greenville*SC*29601*US~PO1*1*10*EA*3.50**VN*SKU-100~CTT*1~SE*9*0001~GE*1*1~IEA*1*000000001~"
+}
