@@ -149,6 +149,8 @@ Core endpoints:
 
 ## Web UI
 
+![EDIForge web UI showing X12 input and structural JSON output](docs/assets/web-ui.png)
+
 The embedded UI is served by the same local API:
 
 ```bash
